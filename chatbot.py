@@ -1,3 +1,4 @@
+import json
 import math
 import os
 import warnings
@@ -5,6 +6,7 @@ from typing import List, Optional
 
 import chromadb
 import google.generativeai as genai
+import redis
 from chromadb import Collection
 from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
@@ -35,6 +37,13 @@ class CustomGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):
 
     def as_retriever(self, search_kwargs):
         super().as_retriever(search_kwargs=search_kwargs)
+
+
+def get_redis_connection():
+    return redis.Redis(
+        host=os.getenv("REDIS_HOST"),
+        port=os.getenv("REDIS_PORT"),
+        db=0)
 
 
 def get_llm():
@@ -167,6 +176,9 @@ def index_files(file: UploadFile, userID):
     chromadb_collection.add(
         ids=[str(i) for i in range(len(texts))], documents=texts)
 
+    # store texts in redis here
+    get_redis_connection().set(f"{userID}/texts", json.dumps(texts))
+
     print('vector indexing done!')
 
 
@@ -176,7 +188,7 @@ def answer(query, userID):
         return 'The context is empty. Please add a file to query.'
 
     # get chat_history from redis
-    chat_history = get_from_redis(userID=userID)
+    chat_history = []  # retrieve_chat_history(userID=userID)
 
     response = rag_chain.invoke({
         'input': query,
@@ -193,11 +205,20 @@ def answer_from_llm(query):
     return response.content
 
 
-def summarize_from_llm(text):
+def summarize_from_llm(userID):
+    # get the saved texts from redis for userID
+    redis_client = get_redis_connection()
+    if not redis_client.exists(f"{userID}/texts"):
+        raise Exception("Cannot summarize, context is empty")
+
+    text = json.loads(redis_client.get(f"{userID}/texts"))
+
     prompt = f"""You are a highly skilled text summarizer.
         Please read the following text carefully and provide a concise summary that
         captures the main points and key details. Make sure the summary is clear, coherent,
         and retains the essential information from the original text.
+        Do not apply any markdown and formatting to the summary.
+
         Here is the text to summarize: {text}"""
 
     summary = get_summary_model().generate_content(prompt)
@@ -210,9 +231,10 @@ def embed_query(query):
     return get_embedding_model().embed_documents([query])[0]
 
 
-def sematic_doc_search_by_vector(query):
+def sematic_doc_search_by_vector(query, userID):
     query_vector = embed_query(query)
-    results = get_chromadb_instance().similarity_search_by_vector(query_vector, k=1)
+    results = get_chromadb_instance(
+        userID).similarity_search_by_vector(query_vector, k=1)
     if results:
         top_document = results[0].page_content
         return top_document
@@ -221,11 +243,21 @@ def sematic_doc_search_by_vector(query):
 
 
 def get_from_redis(userID) -> List:
+    redis_client = get_redis_connection()
+    if redis_client.exists(f"{userID}/chats"):
+        return json.loads(redis_client.get(f"{userID}/chats"))
     return []
 
 
-def summarize_chat_history(prev_msgs: List) -> str:
-    return ""
+def retrieve_chat_history(userID):
+    chat_history = get_from_redis(userID)
+    chat_history = [[HumanMessage(content=chat[0]), chat[1]]
+                    for chat in chat_history]
+    return chat_history
+
+
+def summarize_chat_history(prev_msgs: List) -> List:
+    return []
 
 
 def store_summarize_chat_history(userID, currentQ, currentA):
@@ -237,8 +269,13 @@ def store_summarize_chat_history(userID, currentQ, currentA):
     limit = math.floor(percent * max_len)
 
     chat_history = get_from_redis(userID)
-    chat_history.extend([HumanMessage(content=currentQ), currentA])
+    chat_history.extend([currentQ, currentA])
 
     if len(chat_history) > max_len:
         prev_msg, recent_msg = chat_history[:limit], chat_history[limit:]
         chat_history = [summarize_chat_history(prev_msg)] + recent_msg
+
+    print(chat_history)
+
+    redis_client = get_redis_connection()
+    redis_client.set(f"{userID}/chats", json.dumps(chat_history))

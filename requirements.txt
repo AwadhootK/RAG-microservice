@@ -11,4 +11,4 @@ python-dotenv
 fastapi
 uvicorn
 python-multipart
-langchain_huggingface
+redis

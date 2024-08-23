@@ -1,0 +1,3 @@
+# RAGScribe
+
+RAG Microservice

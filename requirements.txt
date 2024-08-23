@@ -1,0 +1,14 @@
+sentence_transformers
+numpy
+google-generativeai 
+langchain
+langchain-google-genai 
+chromadb 
+pypdf
+langchain-community 
+langchain-core
+python-dotenv
+fastapi
+uvicorn
+python-multipart
+langchain_huggingface

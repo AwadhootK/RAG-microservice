@@ -17,6 +17,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_google_genai import (ChatGoogleGenerativeAI,
@@ -26,17 +27,29 @@ warnings.filterwarnings("ignore")
 load_dotenv('.env')
 
 
-class CustomGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):
-    def embed_documents(self, texts: List[str],
-                        task_type: Optional[str] = None,
-                        titles: Optional[List[str]] = None,
-                        output_dimensionality: Optional[int] = None) -> List[List[float]]:
-        embeddings_repeated = super().embed_documents(texts)
-        embeddings = [list(emb) for emb in embeddings_repeated]
-        return embeddings
+class EmbeddingAdapter(SentenceTransformerEmbeddings):
 
-    def as_retriever(self, search_kwargs):
-        super().as_retriever(search_kwargs=search_kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _embed_documents(self, texts):
+        return super().embed_documents(texts)
+
+    def __call__(self, input):
+        return self._embed_documents(input)
+
+
+# class CustomGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):
+#     def embed_documents(self, texts: List[str],
+#                         task_type: Optional[str] = None,
+#                         titles: Optional[List[str]] = None,
+#                         output_dimensionality: Optional[int] = None) -> List[List[float]]:
+#         embeddings_repeated = super().embed_documents(texts)
+#         embeddings = [list(emb) for emb in embeddings_repeated]
+#         return embeddings
+
+#     def as_retriever(self, search_kwargs):
+#         super().as_retriever(search_kwargs=search_kwargs)
 
 
 def get_redis_connection():
@@ -51,9 +64,9 @@ def get_llm():
         model="gemini-pro", temperature=0.7, convert_system_message_to_human=True)
 
 
-def get_embedding_model():
-    return CustomGoogleGenerativeAIEmbeddings(
-        model="models/embedding-001")
+# def get_embedding_model():
+#     return CustomGoogleGenerativeAIEmbeddings(
+#         model="models/embedding-001")
 
 
 def get_summary_model():
@@ -61,7 +74,8 @@ def get_summary_model():
 
 
 def get_embedding_function():
-    return embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
+    return EmbeddingAdapter(model_name='sentence-transformers/all-mpnet-base-v2')
+    # return embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
 
 
 def get_chroma_client():
@@ -73,7 +87,7 @@ def get_chroma_client():
 def get_chromadb_instance(userID) -> Chroma:
     return Chroma(client=get_chroma_client(),
                   collection_name=userID,
-                  embedding_function=get_embedding_model())
+                  embedding_function=get_embedding_function())
 
 
 def get_vector_index(userID):
@@ -188,11 +202,11 @@ def answer(query, userID):
         return 'The context is empty. Please add a file to query.'
 
     # get chat_history from redis
-    chat_history = []  # retrieve_chat_history(userID=userID)
+    chat_history = retrieve_chat_history(userID=userID)
 
     response = rag_chain.invoke({
         'input': query,
-        'chat_history': chat_history
+        'chat_history': []
     })
 
     store_summarize_chat_history(
@@ -211,7 +225,7 @@ def summarize_from_llm(userID):
     if not redis_client.exists(f"{userID}/texts"):
         raise Exception("Cannot summarize, context is empty")
 
-    text = json.loads(redis_client.get(f"{userID}/texts"))
+    text = json.loads(redis_client.get(f"{userID}/texts").decode('utf-8'))
 
     prompt = f"""You are a highly skilled text summarizer.
         Please read the following text carefully and provide a concise summary that
@@ -228,11 +242,12 @@ def summarize_from_llm(userID):
 
 
 def embed_query(query):
-    return get_embedding_model().embed_documents([query])[0]
+    return get_embedding_function().embed_query(text=query)
 
 
 def sematic_doc_search_by_vector(query, userID):
     query_vector = embed_query(query)
+    print(query_vector)
     results = get_chromadb_instance(
         userID).similarity_search_by_vector(query_vector, k=1)
     if results:
@@ -245,19 +260,46 @@ def sematic_doc_search_by_vector(query, userID):
 def get_from_redis(userID) -> List:
     redis_client = get_redis_connection()
     if redis_client.exists(f"{userID}/chats"):
-        return json.loads(redis_client.get(f"{userID}/chats"))
+        return decode_chats(redis_client.get(f"{userID}/chats").decode('utf-8'))
     return []
 
 
 def retrieve_chat_history(userID):
     chat_history = get_from_redis(userID)
-    chat_history = [[HumanMessage(content=chat[0]), chat[1]]
+    chat_history = [[HumanMessage(chat[0])] if len(chat) == 1 else [HumanMessage(content=chat[0]), chat[1]]
                     for chat in chat_history]
     return chat_history
 
 
 def summarize_chat_history(prev_msgs: List) -> List:
     return []
+
+
+def encode_list(list: List[str]) -> str:
+    if len(list) == 1:
+        return f'[{list[0]}]'
+    return f'[{list[0]}]=[{list[1]}]'
+
+
+def encode_chats(chats: List[List[str]]) -> str:
+    delimiter = '<s>'
+    s = ''
+    s += delimiter.join([encode_list(i) for i in chats])
+    s += delimiter
+    return s
+
+
+def decode_chats(chats: str) -> List[List[str]]:
+    l = []
+    for chat in chats.split("<s>"):
+        t = chat.split('=')
+        if len(t) == 1:
+            a = t[0][1:-1]
+            l.append([a])
+        else:
+            q, a = t[0][1:-1], t[1][1:-1]
+            l.append([q, a])
+    return l
 
 
 def store_summarize_chat_history(userID, currentQ, currentA):
@@ -269,13 +311,11 @@ def store_summarize_chat_history(userID, currentQ, currentA):
     limit = math.floor(percent * max_len)
 
     chat_history = get_from_redis(userID)
-    chat_history.extend([currentQ, currentA])
+    chat_history.append([currentQ, currentA])
 
     if len(chat_history) > max_len:
         prev_msg, recent_msg = chat_history[:limit], chat_history[limit:]
         chat_history = [summarize_chat_history(prev_msg)] + recent_msg
 
-    print(chat_history)
-
     redis_client = get_redis_connection()
-    redis_client.set(f"{userID}/chats", json.dumps(chat_history))
+    redis_client.set(f"{userID}/chats", encode_chats(chat_history))

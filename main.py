@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from chatbot import *
-from model import QueryModel
+from model import AnswerLLMModel, QueryModel
 
 app = FastAPI()
 
@@ -76,8 +76,14 @@ async def semantic_search(queryBody: QueryModel):
         query=queryBody.query, userID=queryBody.username)
     return create_json_response({'similar_doc': semantic_result})
 
+
+@app.post("/answer-llm")
+async def answer_llm(queryBody: AnswerLLMModel):
+    answer = answer_from_llm(query=queryBody.query)
+    return create_json_response({'answer': answer})
+
 if __name__ == "__main__":
-    #? run: source ../../../venvs/rag_env/bin/activate
+    # ? run: source ../../../venvs/rag_env/bin/activate
 
     configure_llm()
     uvicorn.run("main:app", host="0.0.0.0", port=8000)

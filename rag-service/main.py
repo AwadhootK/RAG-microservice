@@ -1,10 +1,9 @@
 import uvicorn
+from chatbot import *
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
-from starlette.middleware.cors import CORSMiddleware
-
-from chatbot import *
 from model import AnswerLLMModel, QueryModel
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -89,7 +88,7 @@ async def delete_context(username):
     return create_json_response({'message': f'{username}\'s context cleared successfully!'})
 
 if __name__ == "__main__":
-    # ? run: source ../../../venvs/rag_env/bin/activate
+    # ? run: source ../../../../venvs/rag_env/bin/activate
 
     configure_llm()
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

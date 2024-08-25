@@ -319,3 +319,10 @@ def store_summarize_chat_history(userID, currentQ, currentA):
 
     redis_client = get_redis_connection()
     redis_client.set(f"{userID}/chats", encode_chats(chat_history))
+
+
+def clear_context(userID):
+    # clear redis and chromaDB
+    get_redis_connection().delete(f"{userID}/chats")
+    get_redis_connection().delete(f"{userID}/texts")
+    get_chroma_client().delete_collection(userID)

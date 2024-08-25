@@ -82,6 +82,12 @@ async def answer_llm(queryBody: AnswerLLMModel):
     answer = answer_from_llm(query=queryBody.query)
     return create_json_response({'answer': answer})
 
+
+@app.delete("/empty-context/{username}")
+async def delete_context(username):
+    clear_context(userID=username)
+    return create_json_response({'message': f'{username}\'s context cleared successfully!'})
+
 if __name__ == "__main__":
     # ? run: source ../../../venvs/rag_env/bin/activate
 

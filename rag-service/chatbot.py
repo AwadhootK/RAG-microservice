@@ -35,19 +35,6 @@ class EmbeddingAdapter(SentenceTransformerEmbeddings):
         return self._embed_documents(input)
 
 
-# class CustomGoogleGenerativeAIEmbeddings(GoogleGenerativeAIEmbeddings):
-#     def embed_documents(self, texts: List[str],
-#                         task_type: Optional[str] = None,
-#                         titles: Optional[List[str]] = None,
-#                         output_dimensionality: Optional[int] = None) -> List[List[float]]:
-#         embeddings_repeated = super().embed_documents(texts)
-#         embeddings = [list(emb) for emb in embeddings_repeated]
-#         return embeddings
-
-#     def as_retriever(self, search_kwargs):
-#         super().as_retriever(search_kwargs=search_kwargs)
-
-
 def get_redis_connection():
     return redis.Redis(
         host=os.getenv("REDIS_HOST"),
@@ -58,11 +45,6 @@ def get_redis_connection():
 def get_llm():
     return ChatGoogleGenerativeAI(
         model="gemini-pro", temperature=0.7, convert_system_message_to_human=True)
-
-
-# def get_embedding_model():
-#     return CustomGoogleGenerativeAIEmbeddings(
-#         model="models/embedding-001")
 
 
 def get_summary_model():
@@ -88,11 +70,6 @@ def get_chromadb_instance(userID) -> Chroma:
 
 def get_vector_index(userID):
     return get_chromadb_instance(userID).as_retriever(search_kwargs={"k": 5})
-
-
-# def get_chromadb_collection_intsance(userID) -> Collection:
-#     return get_chroma_client().get_or_create_collection(name=userID,
-#                                                         embedding_function=get_embedding_function())
 
 
 def create_custom_rag_chain(userID):
@@ -137,59 +114,6 @@ def create_custom_rag_chain(userID):
 
 def load_files(userID):
     pass
-
-
-# def save_file(file, userID):
-#     file_location = f"docs/{userID}/{file.filename}"
-
-#     try:
-#         os.makedirs(f"docs/{userID}")
-#     except FileExistsError:
-#         pass
-
-#     with open(file_location, "wb") as f:
-#         contents = file.file.read()
-#         f.write(contents)
-
-
-# def empty_folder(folder_path):
-#     for item in os.listdir(folder_path):
-#         item_path = os.path.join(folder_path, item)
-#         if os.path.isfile(item_path):
-#             os.remove(item_path)
-#         elif os.path.isdir(item_path):
-#             empty_folder(item_path)
-#             os.rmdir(item_path)
-
-
-# def index_files(file: UploadFile, userID):
-#     pages = []
-#     texts = []
-
-#     file_location = f"docs/{userID}/{file.filename}"
-#     save_file(file=file, userID=userID)
-
-#     text_splitter = RecursiveCharacterTextSplitter(
-#         chunk_size=10000, chunk_overlap=1000)
-#     pdf_loader = PyPDFLoader(file_path=file_location)
-#     new_pages = pdf_loader.load_and_split()
-#     pages.extend(new_pages)
-#     context = "\n\n".join(str(p.page_content) for p in new_pages)
-#     texts.extend(text_splitter.split_text(context))
-
-#     empty_folder(f"docs")
-
-#     if texts == []:
-#         raise Exception("Could not read file")
-
-#     chromadb_collection = get_chromadb_collection_intsance(userID=userID)
-#     chromadb_collection.add(
-#         ids=[str(i) for i in range(len(texts))], documents=texts)
-
-#     # store texts in redis here
-#     get_redis_connection().set(f"{userID}/texts", json.dumps(texts))
-
-#     print('vector indexing done!')
 
 
 def answer(query, userID):

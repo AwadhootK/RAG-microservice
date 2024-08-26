@@ -34,29 +34,6 @@ async def root():
     return create_json_response({"message": "pong"})
 
 
-@app.post("/upload")
-async def upload_file(
-    index: str = Form(...),
-    save: str = Form(...),
-    username: str = Form(...),
-    file: UploadFile = File(...)
-):
-    # can use a messaging queue to make it asynchronous
-    res = {'index': False, 'saved': False}
-
-    #! if save == 'true':
-    # upload to azure file storage
-
-    if index == 'true':
-        print('indexing')
-        index_files(file=file, userID=username)
-        if not res:
-            return {"error": "Gemini Rate Limit Exceeded"}
-        res['index'] = True
-
-    return create_json_response({"info": res})
-
-
 @app.post("/ask")
 async def respond(queryBody: QueryModel):
     ans = answer(query=queryBody.query, userID=queryBody.username)

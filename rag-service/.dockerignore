@@ -1,7 +1,0 @@
-**/*.pyc
-**/*.pyo
-**/*.mo
-**/__pycache__/
-Dockerfile
-**/*.md
-.env

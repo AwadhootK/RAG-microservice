@@ -1,8 +1,5 @@
-# RAGScribe
+# RAGScribe - RAG on LLM Microservice
 
-RAG Microservice
-
-## Run By
 ```
-python3 main.py
+Run: python main.py
 ```

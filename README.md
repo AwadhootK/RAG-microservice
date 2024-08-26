@@ -1,8 +1,5 @@
-# RAGScribe
+# RAGScribe - Document Indexing Microservice
 
-RAG Microservice
-
-## Run By
 ```
-python3 main.py
+Run: python main.py
 ```

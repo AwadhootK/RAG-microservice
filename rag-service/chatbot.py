@@ -2,15 +2,12 @@ import json
 import math
 import os
 import warnings
-from typing import List, Optional
+from typing import List
 
 import chromadb
 import google.generativeai as genai
 import redis
-from chromadb import Collection
-from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
-from fastapi import UploadFile
 from langchain.chains import (create_history_aware_retriever,
                               create_retrieval_chain)
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -20,8 +17,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_google_genai import (ChatGoogleGenerativeAI,
-                                    GoogleGenerativeAIEmbeddings)
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 warnings.filterwarnings("ignore")
 load_dotenv('.env')
@@ -94,9 +90,9 @@ def get_vector_index(userID):
     return get_chromadb_instance(userID).as_retriever(search_kwargs={"k": 5})
 
 
-def get_chromadb_collection_intsance(userID) -> Collection:
-    return get_chroma_client().get_or_create_collection(name=userID,
-                                                        embedding_function=get_embedding_function())
+# def get_chromadb_collection_intsance(userID) -> Collection:
+#     return get_chroma_client().get_or_create_collection(name=userID,
+#                                                         embedding_function=get_embedding_function())
 
 
 def create_custom_rag_chain(userID):
@@ -143,57 +139,57 @@ def load_files(userID):
     pass
 
 
-def save_file(file, userID):
-    file_location = f"docs/{userID}/{file.filename}"
+# def save_file(file, userID):
+#     file_location = f"docs/{userID}/{file.filename}"
 
-    try:
-        os.makedirs(f"docs/{userID}")
-    except FileExistsError:
-        pass
+#     try:
+#         os.makedirs(f"docs/{userID}")
+#     except FileExistsError:
+#         pass
 
-    with open(file_location, "wb") as f:
-        contents = file.file.read()
-        f.write(contents)
-
-
-def empty_folder(folder_path):
-    for item in os.listdir(folder_path):
-        item_path = os.path.join(folder_path, item)
-        if os.path.isfile(item_path):
-            os.remove(item_path)
-        elif os.path.isdir(item_path):
-            empty_folder(item_path)
-            os.rmdir(item_path)
+#     with open(file_location, "wb") as f:
+#         contents = file.file.read()
+#         f.write(contents)
 
 
-def index_files(file: UploadFile, userID):
-    pages = []
-    texts = []
+# def empty_folder(folder_path):
+#     for item in os.listdir(folder_path):
+#         item_path = os.path.join(folder_path, item)
+#         if os.path.isfile(item_path):
+#             os.remove(item_path)
+#         elif os.path.isdir(item_path):
+#             empty_folder(item_path)
+#             os.rmdir(item_path)
 
-    file_location = f"docs/{userID}/{file.filename}"
-    save_file(file=file, userID=userID)
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=10000, chunk_overlap=1000)
-    pdf_loader = PyPDFLoader(file_path=file_location)
-    new_pages = pdf_loader.load_and_split()
-    pages.extend(new_pages)
-    context = "\n\n".join(str(p.page_content) for p in new_pages)
-    texts.extend(text_splitter.split_text(context))
+# def index_files(file: UploadFile, userID):
+#     pages = []
+#     texts = []
 
-    empty_folder(f"docs")
+#     file_location = f"docs/{userID}/{file.filename}"
+#     save_file(file=file, userID=userID)
 
-    if texts == []:
-        raise Exception("Could not read file")
+#     text_splitter = RecursiveCharacterTextSplitter(
+#         chunk_size=10000, chunk_overlap=1000)
+#     pdf_loader = PyPDFLoader(file_path=file_location)
+#     new_pages = pdf_loader.load_and_split()
+#     pages.extend(new_pages)
+#     context = "\n\n".join(str(p.page_content) for p in new_pages)
+#     texts.extend(text_splitter.split_text(context))
 
-    chromadb_collection = get_chromadb_collection_intsance(userID=userID)
-    chromadb_collection.add(
-        ids=[str(i) for i in range(len(texts))], documents=texts)
+#     empty_folder(f"docs")
 
-    # store texts in redis here
-    get_redis_connection().set(f"{userID}/texts", json.dumps(texts))
+#     if texts == []:
+#         raise Exception("Could not read file")
 
-    print('vector indexing done!')
+#     chromadb_collection = get_chromadb_collection_intsance(userID=userID)
+#     chromadb_collection.add(
+#         ids=[str(i) for i in range(len(texts))], documents=texts)
+
+#     # store texts in redis here
+#     get_redis_connection().set(f"{userID}/texts", json.dumps(texts))
+
+#     print('vector indexing done!')
 
 
 def answer(query, userID):

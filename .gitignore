@@ -1,3 +1,5 @@
-.env
-__pycache__
+rag-service/.env
+rag-service/__pycache__
+indexing-service/.env
+indexing-service/__pycache__
 .DS_Store

@@ -1,0 +1,12 @@
+sentence_transformers
+numpy
+langchain
+langchain-community 
+chromadb 
+fastapi
+uvicorn
+python-multipart
+redis
+chromadb
+pypdf
+python-dotenv

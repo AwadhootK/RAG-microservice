@@ -2,15 +2,16 @@ import json
 import os
 import warnings
 
-import chromadb
 import redis
-from chromadb import Collection
 from dotenv import load_dotenv
 from fastapi import UploadFile
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import SentenceTransformerEmbeddings
+
+import chromadb
+from chromadb import Collection
 
 warnings.filterwarnings("ignore")
 load_dotenv('.env')
@@ -41,6 +42,10 @@ def get_embedding_function():
 
 
 def get_chroma_client():
+    print('CHROMA HOST = ' + os.getenv("CHROMA_HOST"))
+    print('CHROMA PORT = ' + os.getenv("CHROMA_PORT"))
+    print('REDIS HOST = ' + os.getenv("REDIS_HOST"))
+    print('REDIS PORT = ' + os.getenv("REDIS_PORT"))
     return chromadb.HttpClient(
         host=os.getenv("CHROMA_HOST"),
         port=os.getenv("CHROMA_PORT"))

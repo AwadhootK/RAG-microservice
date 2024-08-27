@@ -42,10 +42,6 @@ def get_embedding_function():
 
 
 def get_chroma_client():
-    print('CHROMA HOST = ' + os.getenv("CHROMA_HOST"))
-    print('CHROMA PORT = ' + os.getenv("CHROMA_PORT"))
-    print('REDIS HOST = ' + os.getenv("REDIS_HOST"))
-    print('REDIS PORT = ' + os.getenv("REDIS_PORT"))
     return chromadb.HttpClient(
         host=os.getenv("CHROMA_HOST"),
         port=os.getenv("CHROMA_PORT"))

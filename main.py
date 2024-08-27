@@ -1,3 +1,5 @@
+import warnings
+
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -51,5 +53,6 @@ async def upload_file(
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate
 
+    warnings.filterwarnings("always")
     load_dotenv('.env')
     uvicorn.run("main:app", host="0.0.0.0", port=8100, reload=True)

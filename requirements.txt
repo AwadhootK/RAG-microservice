@@ -10,3 +10,4 @@ redis
 chromadb
 pypdf
 python-dotenv
+sqlite3

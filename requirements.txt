@@ -4,11 +4,11 @@ google-generativeai
 langchain
 langchain-google-genai 
 chromadb 
-pypdf
+pypdf 
 langchain-community 
-langchain-core
-python-dotenv
+langchain-core 
+python-dotenv 
 fastapi
 uvicorn
 python-multipart
-redis
+redis 

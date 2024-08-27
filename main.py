@@ -1,9 +1,10 @@
 import uvicorn
 from chatbot import *
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
 from model import AnswerLLMModel, QueryModel
 from starlette.middleware.cors import CORSMiddleware
+from utils.response import *
 
 app = FastAPI()
 
@@ -23,10 +24,6 @@ app.add_middleware(
 def configure_llm():
     GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
     genai.configure(api_key=GOOGLE_API_KEY)
-
-
-def create_json_response(content, status_code=200):
-    return JSONResponse(content=content, status_code=status_code)
 
 
 @app.get("/ping")
@@ -67,5 +64,6 @@ async def delete_context(username):
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate
 
+    load_dotenv('.env')
     configure_llm()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

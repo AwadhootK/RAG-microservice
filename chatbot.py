@@ -1,75 +1,13 @@
 import json
 import math
-import os
-import warnings
-from typing import List
 
-import chromadb
-import google.generativeai as genai
-import redis
-from dotenv import load_dotenv
 from langchain.chains import (create_history_aware_retriever,
                               create_retrieval_chain)
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_core.messages import HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-warnings.filterwarnings("ignore")
-load_dotenv('.env')
-
-
-class EmbeddingAdapter(SentenceTransformerEmbeddings):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def _embed_documents(self, texts):
-        return super().embed_documents(texts)
-
-    def __call__(self, input):
-        return self._embed_documents(input)
-
-
-def get_redis_connection():
-    return redis.Redis(
-        host=os.getenv("REDIS_HOST"),
-        port=os.getenv("REDIS_PORT"),
-        db=0)
-
-
-def get_llm():
-    return ChatGoogleGenerativeAI(
-        model="gemini-pro", temperature=0.7, convert_system_message_to_human=True)
-
-
-def get_summary_model():
-    return genai.GenerativeModel("gemini-pro")
-
-
-def get_embedding_function():
-    return EmbeddingAdapter(model_name='sentence-transformers/all-mpnet-base-v2')
-    # return embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
-
-
-def get_chroma_client():
-    return chromadb.HttpClient(
-        host=os.getenv("CHROMA_HOST"),
-        port=os.getenv("CHROMA_PORT"))
-
-
-def get_chromadb_instance(userID) -> Chroma:
-    return Chroma(client=get_chroma_client(),
-                  collection_name=userID,
-                  embedding_function=get_embedding_function())
-
-
-def get_vector_index(userID):
-    return get_chromadb_instance(userID).as_retriever(search_kwargs={"k": 5})
+from utils.chroma_service import *
+from utils.redis_service import *
 
 
 def create_custom_rag_chain(userID):
@@ -126,7 +64,7 @@ def answer(query, userID):
 
     response = rag_chain.invoke({
         'input': query,
-        'chat_history': []
+        'chat_history': []  # ! add the history here
     })
 
     store_summarize_chat_history(
@@ -177,13 +115,6 @@ def sematic_doc_search_by_vector(query, userID):
         return "No relevant documents found."
 
 
-def get_from_redis(userID) -> List:
-    redis_client = get_redis_connection()
-    if redis_client.exists(f"{userID}/chats"):
-        return decode_chats(redis_client.get(f"{userID}/chats").decode('utf-8'))
-    return []
-
-
 def retrieve_chat_history(userID):
     chat_history = get_from_redis(userID)
     chat_history = [[HumanMessage(chat[0])] if len(chat) == 1 else [HumanMessage(content=chat[0]), chat[1]]
@@ -193,33 +124,6 @@ def retrieve_chat_history(userID):
 
 def summarize_chat_history(prev_msgs: List) -> List:
     return []
-
-
-def encode_list(list: List[str]) -> str:
-    if len(list) == 1:
-        return f'[{list[0]}]'
-    return f'[{list[0]}]=[{list[1]}]'
-
-
-def encode_chats(chats: List[List[str]]) -> str:
-    delimiter = '<s>'
-    s = ''
-    s += delimiter.join([encode_list(i) for i in chats])
-    s += delimiter
-    return s
-
-
-def decode_chats(chats: str) -> List[List[str]]:
-    l = []
-    for chat in chats.split("<s>"):
-        t = chat.split('=')
-        if len(t) == 1:
-            a = t[0][1:-1]
-            l.append([a])
-        else:
-            q, a = t[0][1:-1], t[1][1:-1]
-            l.append([q, a])
-    return l
 
 
 def store_summarize_chat_history(userID, currentQ, currentA):

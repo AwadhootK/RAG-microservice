@@ -1,8 +1,9 @@
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import JSONResponse
 from indexing import *
 from starlette.middleware.cors import CORSMiddleware
+from utils.response import *
 
 app = FastAPI()
 
@@ -17,10 +18,6 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
-
-
-def create_json_response(content, status_code=200):
-    return JSONResponse(content=content, status_code=status_code)
 
 
 @app.get("/ping")
@@ -54,4 +51,5 @@ async def upload_file(
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate
 
+    load_dotenv('.env')
     uvicorn.run("main:app", host="0.0.0.0", port=8100, reload=True)

@@ -1,6 +1,8 @@
 import json
 import math
+import uuid
 
+import pika
 from langchain.chains import (create_history_aware_retriever,
                               create_retrieval_chain)
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -64,7 +66,7 @@ def answer(query, userID):
 
     response = rag_chain.invoke({
         'input': query,
-        'chat_history': []  # ! add the history here
+        'chat_history': chat_history  # ! add the history here
     })
 
     store_summarize_chat_history(
@@ -150,3 +152,24 @@ def clear_context(userID):
     get_redis_connection().delete(f"{userID}/chats")
     get_redis_connection().delete(f"{userID}/texts")
     get_chroma_client().delete_collection(userID)
+
+
+def push_index_queue(query):
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('rabbitmq'))
+    channel = connection.channel()
+
+    channel.exchange_declare(
+        exchange='index_exchange',
+        exchange_type='direct'
+    )
+
+    channel.basic_publish(
+        exchange='index_exchange',
+        routing_key='index',  # message routing key
+        body=query
+    )
+
+    print('sent message')
+
+    connection.close()

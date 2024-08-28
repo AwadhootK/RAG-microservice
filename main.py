@@ -61,6 +61,12 @@ async def delete_context(username):
     clear_context(userID=username)
     return create_json_response({'message': f'{username}\'s context cleared successfully!'})
 
+
+@app.post("/temp")
+async def push_queue(queryBody: QueryModel):
+    push_index_queue(query=queryBody.query)
+    return create_json_response({'message': 'Added to queue!'})
+
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate
 

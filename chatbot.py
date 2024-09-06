@@ -195,5 +195,10 @@ def push_index_queue(userfile: UploadFile, userID):
 def get_all_redis(job_id):
     conn = get_redis_connection()
     if conn.exists(job_id):
-        return conn.get(job_id).decode()
+        status = conn.get(job_id).decode()
+
+        if status == "done":
+            conn.delete(job_id)
+
+        return status
     return f"No job with ID: {job_id} found!"

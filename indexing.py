@@ -6,6 +6,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from utils.chroma_service import *
 from utils.folder_service import *
 from utils.redis_service import *
+from utils.chroma_service import *
 
 
 def index_files(file: UploadFile, userID):

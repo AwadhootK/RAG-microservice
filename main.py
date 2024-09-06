@@ -1,4 +1,5 @@
 import warnings
+from time import sleep
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -7,13 +8,15 @@ from starlette.middleware.cors import CORSMiddleware
 from utils.rabbitmq_service import start_consuming
 from utils.response import *
 
-
 if __name__ == "__main__":
     # ? run: source ../../venvs/rag_env/bin/activate
 
-    warnings.filterwarnings("always")
+    warnings.filterwarnings("ignore")
     load_dotenv('.env')
 
-    start_consuming()
+    print("Running indexing service...")
 
-    # uvicorn.run("main:app", host="0.0.0.0", port=8100, reload=True)
+    with open("log.txt", "w") as f:
+        pass
+
+    start_consuming()

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://ragchatbot.cvs2uesqwf7d.ap-south-1.rds.amazonaws.com:5432/jwt_security
-    username: root
-    password: awadh123##
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

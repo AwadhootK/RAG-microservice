@@ -31,6 +31,11 @@ async def root():
     return create_json_response({"message": "pong"})
 
 
+@app.get("/get_redis_temp")
+async def redis():
+    return create_json_response({"redis": get_all_redis()})
+
+
 @app.post("/ask")
 async def respond(queryBody: QueryModel):
     ans = answer(query=queryBody.query, userID=queryBody.username)
@@ -62,10 +67,31 @@ async def delete_context(username):
     return create_json_response({'message': f'{username}\'s context cleared successfully!'})
 
 
-@app.post("/temp")
-async def push_queue(queryBody: QueryModel):
-    push_index_queue(query=queryBody.query)
-    return create_json_response({'message': 'Added to queue!'})
+@app.post("/upload")
+async def upload_file(
+    index: str = Form(...),
+    save: str = Form(...),
+    username: str = Form(...),
+    file: UploadFile = File(...)
+):
+    #! if save == 'true':
+    # upload to azure file storage
+    try:
+        if index == 'true':
+            print('indexing')
+            # index_files(file=file, userID=username)
+            push_index_queue(userfile=file, userID=username)
+    except Exception as e:
+        print(e)
+        return create_json_response({'error': 'Error...'})
+
+    return create_json_response({"info": "processing..."})
+
+
+@app.post("/push-redis")
+async def redis_get(query: QueryModel):
+    push_index_queue(query=query.query)
+    return create_json_response({"message": "Added to queue!"})
 
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate

@@ -1,8 +1,9 @@
+import base64
 import json
 import math
-import uuid
 
 import pika
+from fastapi import UploadFile
 from langchain.chains import (create_history_aware_retriever,
                               create_retrieval_chain)
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -66,7 +67,7 @@ def answer(query, userID):
 
     response = rag_chain.invoke({
         'input': query,
-        'chat_history': chat_history  # ! add the history here
+        'chat_history': []  # ! add the history here
     })
 
     store_summarize_chat_history(
@@ -154,22 +155,43 @@ def clear_context(userID):
     get_chroma_client().delete_collection(userID)
 
 
-def push_index_queue(query):
+def push_index_queue(userfile: UploadFile, userID):
+    credentials = pika.PlainCredentials('admin', 'pass@123')
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters('rabbitmq'))
+        pika.ConnectionParameters(host='rabbitmq', port=5672, connection_attempts=5, retry_delay=1, credentials=credentials))
     channel = connection.channel()
 
-    channel.exchange_declare(
-        exchange='index_exchange',
-        exchange_type='direct'
-    )
+    try:
+        channel.exchange_declare(
+            exchange='index_exchange',
+            exchange_type='direct'
+        )
+        print("Exchange declared successfully in publisher")
+    except Exception as e:
+        print(f"Error declaring exchange in publisher: {e}")
+        connection.close()
+        return
+
+    file_content = userfile.file.read()
 
     channel.basic_publish(
         exchange='index_exchange',
         routing_key='index',  # message routing key
-        body=query
+        body=file_content,
+        properties=pika.BasicProperties(
+            content_type='application/octet-stream',
+            delivery_mode=2  # Make message persistent
+        )
     )
 
-    print('sent message')
+    print('Sent message')
 
     connection.close()
+
+
+def get_all_redis():
+    conn = get_redis_connection()
+
+    if conn.exists("rabbit"):
+        return conn.get("rabbit").decode()
+    return "redis is empty!"

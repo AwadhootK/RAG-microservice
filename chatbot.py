@@ -1,6 +1,6 @@
-import base64
 import json
 import math
+import uuid
 
 import pika
 from fastapi import UploadFile
@@ -173,6 +173,7 @@ def push_index_queue(userfile: UploadFile, userID):
         return
 
     file_content = userfile.file.read()
+    job_id = uuid.uuid4().hex
 
     channel.basic_publish(
         exchange='index_exchange',
@@ -180,18 +181,19 @@ def push_index_queue(userfile: UploadFile, userID):
         body=file_content,
         properties=pika.BasicProperties(
             content_type='application/octet-stream',
-            delivery_mode=2  # Make message persistent
+            delivery_mode=2,  # Make message persistent
+            headers={"userID": userID, "job_id": job_id}
         )
     )
 
     print('Sent message')
 
     connection.close()
+    return job_id
 
 
-def get_all_redis():
+def get_all_redis(job_id):
     conn = get_redis_connection()
-
-    if conn.exists("rabbit"):
-        return conn.get("rabbit").decode()
-    return "redis is empty!"
+    if conn.exists(job_id):
+        return conn.get(job_id).decode()
+    return f"No job with ID: {job_id} found!"

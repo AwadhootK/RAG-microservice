@@ -31,9 +31,9 @@ async def root():
     return create_json_response({"message": "pong"})
 
 
-@app.get("/get_redis_temp")
-async def redis():
-    return create_json_response({"redis": get_all_redis()})
+@app.get("/get_redis_temp/{job_id}")
+async def redis(job_id):
+    return create_json_response({"redis": get_all_redis(job_id=job_id)})
 
 
 @app.post("/ask")
@@ -76,16 +76,24 @@ async def upload_file(
 ):
     #! if save == 'true':
     # upload to azure file storage
+
+    job_id = None
     try:
         if index == 'true':
             print('indexing')
             # index_files(file=file, userID=username)
-            push_index_queue(userfile=file, userID=username)
+            job_id = push_index_queue(userfile=file, userID=username)
     except Exception as e:
         print(e)
         return create_json_response({'error': 'Error...'})
 
-    return create_json_response({"info": "processing..."})
+    if job_id is None:
+        return create_json_response({'error': 'Could not add to processing queue...'})
+
+    return create_json_response({
+        "job_id": job_id,
+        "status": "processing..."
+    })
 
 
 @app.post("/push-redis")

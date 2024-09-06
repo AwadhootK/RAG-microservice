@@ -1,0 +1,97 @@
+version: "3.9"
+
+services:
+  rag:
+    image: awadhootk/rag-service:rag
+    # build: ./RAG-microservice
+    restart: always
+    container_name: rag
+    depends_on:
+      - chromadb
+      - redis
+      - rabbitmq
+    ports:
+      - "8000:8000"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      CHROMA_HOST: ${CHROMA_HOST}
+      CHROMA_PORT: ${CHROMA_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - my-network
+
+  indexing:
+    depends_on:
+      - rag
+      - chromadb
+      - redis
+      - rabbitmq
+    image: awadhootk/rag-service:indexing
+    restart: always
+    # build: ./Indexing-microservice
+    container_name: indexing
+    ports:
+      - "8100:8100"
+    environment:
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      CHROMA_HOST: ${CHROMA_HOST}
+      CHROMA_PORT: ${CHROMA_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - my-network
+
+  chromadb:
+    build: ./chromadb
+    container_name: chromadb
+    ports:
+      - 8800:8000
+    env_file:
+      - ./.env
+    volumes:
+      - .docker/my_db:/chroma/my_db
+      - .docker/my_config:/chroma/my_config
+    networks:
+      - my-network
+
+  redis:
+    depends_on:
+      - chromadb
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - my-network
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    command: rabbitmq-server
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s # Increased interval
+      timeout: 30s # Increased timeout
+      retries: 5 # Increased retries to give RabbitMQ more time
+    expose:
+      - "5672"
+      - "15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "pass@123"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - my-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  my-network:
+    driver: bridge

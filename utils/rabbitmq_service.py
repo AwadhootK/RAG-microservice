@@ -21,7 +21,7 @@ def write_logs(log):
 
 
 def start_consuming():
-    write_logs('started consuming')
+    # write_logs('started consuming')
 
     connection = try_connect()
     # None
@@ -32,24 +32,24 @@ def start_consuming():
     #     try:
     #         connection = try_connect()
     #     except Exception as e:
-    #         write_logs(f"Connection failed: {e}, retrying in 5 seconds...")
+    # write_logs(f"Connection failed: {e}, retrying in 5 seconds...")
     #         start_count -= 1
     #         time.sleep(5)
 
     if connection is None:
-        write_logs('Failed to establish connection with rabbitmq server...')
+        # write_logs('Failed to establish connection with rabbitmq server...')
         return
 
-    write_logs("Connection established!")
+    # write_logs("Connection established!")
 
     channel = connection.channel()
 
     if not connection or not channel:
-        write_logs('no connection or channel')
+        # write_logs('no connection or channel')
         return
 
-    write_logs('channel created!')
-    write_logs("Connection and channel established")
+    # write_logs('channel created!')
+    # write_logs("Connection and channel established")
 
     # Declare exchange first
     try:
@@ -57,18 +57,18 @@ def start_consuming():
             exchange='index_exchange',
             exchange_type='direct'
         )
-        write_logs("Exchange declared successfully")
+        # write_logs("Exchange declared successfully")
     except Exception as e:
-        write_logs(f"Error declaring exchange: {e}")
+        # write_logs(f"Error declaring exchange: {e}")
         connection.close()
         return
 
     queue_name = 'index_queue'
     try:
         channel.queue_declare(queue_name)
-        write_logs("Queue declared successfully")
+        # write_logs("Queue declared successfully")
     except Exception as e:
-        write_logs(f"Error declaring queue: {e}")
+        # write_logs(f"Error declaring queue: {e}")
         connection.close()
         return
 
@@ -78,9 +78,9 @@ def start_consuming():
             queue=queue_name,
             routing_key='index'  # binding key
         )
-        write_logs("Queue bound to exchange successfully")
+        # write_logs("Queue bound to exchange successfully")
     except Exception as e:
-        write_logs(f"Error binding queue to exchange: {e}")
+        # write_logs(f"Error binding queue to exchange: {e}")
         connection.close()
         return
 
@@ -91,17 +91,22 @@ def start_consuming():
         #     filename=f"${username}/received_file.pdf", file=io.BytesIO(payload['userfile']))
 
         file_like_object = io.BytesIO(body)
-        # ! figure out how to send userid
-        userfile = UploadFile(file=file_like_object, filename='Awadhoot')
+        file_name = properties.headers.get('userID', 'default')
+        job_id = properties.headers.get('job_id', 'default')
 
-        write_logs(f'received payload')
+        # ! figure out how to send userid
+        userfile = UploadFile(file=file_like_object, filename=file_name)
+
+        # write_logs(f'received payload')
+
+        get_redis_connection().set(job_id, "processing")
 
         index_files(file=userfile, userID=userfile.filename)
 
-        write_logs(f'indexing of {userfile.filename} done')
+        # write_logs(f'indexing of {userfile.filename} done')
 
-        get_redis_connection().set(
-            "rabbit", f"{userfile.filename} file received!")
+        get_redis_connection().set(job_id, "done")
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_consume(on_message_callback=callback, queue=queue_name)

@@ -3,5 +3,13 @@ kind: ConfigMap
 metadata:
   name: spring-configmap
 data:
-  SPRING_REDIS_HOST: redis
-  SPRING_REDIS_PORT: 6379
+  SPRING_REDIS_HOST: redis-service
+  SPRING_REDIS_PORT: "6379"
+  INDEXING_HOST: indexing-service
+  INDEXING_PORT: "8100"
+  RAG_HOST: rag-service
+  RAG_PORT: "8000"
+  RABBITMQ_HOST: rabbitmq-service
+  RABBITMQ_PORT: "5672"
+  POSTGRES_HOST: postgres-service
+  POSTGRES_PORT: "5432"

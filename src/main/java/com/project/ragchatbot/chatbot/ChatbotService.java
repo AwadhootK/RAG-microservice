@@ -2,6 +2,7 @@ package com.project.ragchatbot.chatbot;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,9 +33,22 @@ public class ChatbotService {
     private final RestTemplate restTemplate;
     private final ChatService chatService;
     private final SavedChatService savedChatService;
-    private final String FLASK_HOST = "localhost";
-    private final String FLASK_PORT = "8000";
-    private final String FLASK_URL = "http://" + FLASK_HOST + ":" + FLASK_PORT;
+
+    @Value("${RAG_HOST}")
+    private String RAG_HOST;
+
+    @Value("${RAG_PORT}")
+    private String RAG_PORT;
+
+    private String RAG_URL = "http://" + RAG_HOST + ":" + RAG_PORT;
+
+    // @Value("${INDEXING_HOST}")
+    // private String INDEXING_HOST;
+
+    // @Value("${INDEXING_PORT}")
+    // private String INDEXING_PORT;
+
+    // private String INDEXING_URL = "http://" + RAG_HOST + ":" + RAG_PORT;
 
     private String callFlaskAPIPost(String url, String query) {
         String username = UserSecurityDetails.getUsername();
@@ -83,7 +97,7 @@ public class ChatbotService {
         JsonNode jsonNode = objectMapper.readTree(query);
         String question = jsonNode.get("query").asText();
 
-        String answer = callFlaskAPIPost(FLASK_URL + FlaskAPIEndpoints.ASK, query);
+        String answer = callFlaskAPIPost(RAG_URL + FlaskAPIEndpoints.ASK, query);
 
         jsonNode = objectMapper.readTree(answer);
         String reply = jsonNode.get("answer").asText();
@@ -101,19 +115,19 @@ public class ChatbotService {
     }
 
     public void emptyContext() {
-        callFlaskAPIGet(FLASK_URL + FlaskAPIEndpoints.EMPTY_CONTEXT);
+        callFlaskAPIGet(RAG_URL + FlaskAPIEndpoints.EMPTY_CONTEXT);
     }
 
     public String answerLLM(String query) {
-        return callFlaskAPIPost(FLASK_URL + FlaskAPIEndpoints.ANSWER_LLM, query);
+        return callFlaskAPIPost(RAG_URL + FlaskAPIEndpoints.ANSWER_LLM, query);
     }
 
     public String summarize() {
-        return callFlaskAPIGet(FLASK_URL + FlaskAPIEndpoints.SUMMARIZE);
+        return callFlaskAPIGet(RAG_URL + FlaskAPIEndpoints.SUMMARIZE);
     }
 
     public String sematicSearch(String query) {
-        return callFlaskAPIPost(FLASK_URL + FlaskAPIEndpoints.SEMANTIC_SEARCH, query);
+        return callFlaskAPIPost(RAG_URL + FlaskAPIEndpoints.SEMANTIC_SEARCH, query);
     }
 
     public List<SavedChat> getAllSavedChats(String chatName) {
@@ -134,6 +148,6 @@ public class ChatbotService {
     }
 
     public String restoreContext() {
-        return callFlaskAPIPost(FLASK_URL + FlaskAPIEndpoints.RESTORE_CONTEXT);
+        return callFlaskAPIPost(RAG_URL + FlaskAPIEndpoints.RESTORE_CONTEXT);
     }
 }

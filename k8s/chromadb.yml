@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromadb
+  labels:
+    app: chromadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromadb
+  template:
+    metadata:
+      labels:
+        app: chromadb
+    spec:
+      containers:
+        - name: chromadb-app
+          image: awadhootk/rag-service:chromadb
+          ports:
+            - containerPort: 8800
+          env:
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_PORT
+            - name: ANONYMIZED_TELEMETRY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: ANONYMIZED_TELEMETRY
+            - name: IS_PERSISTENT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: IS_PERSISTENT
+            - name: PERSIST_DIRECTORY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: PERSIST_DIRECTORY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chromadb-service
+spec:
+  selector:
+    app: chromadb
+  ports:
+    - protocol: TCP
+      port: 8800
+      targetPort: 8800

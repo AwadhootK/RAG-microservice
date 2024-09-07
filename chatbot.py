@@ -156,9 +156,10 @@ def clear_context(userID):
 
 
 def push_index_queue(userfile: UploadFile, userID):
-    credentials = pika.PlainCredentials('admin', 'pass@123')
+    credentials = pika.PlainCredentials(
+        os.getenv("RABBITMQ_USERNAME"), os.getenv("RABBITMQ_PASSWORD"))
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='rabbitmq', port=5672, connection_attempts=5, retry_delay=1, credentials=credentials))
+        pika.ConnectionParameters(host=os.getenv("RABBITMQ_HOST"), port=os.getenv("RABBITMQ_PORT"), connection_attempts=5, retry_delay=1, credentials=credentials))
     channel = connection.channel()
 
     try:

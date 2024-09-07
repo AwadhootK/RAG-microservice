@@ -45,6 +45,26 @@ spec:
                 configMapKeyRef:
                   name: rag-configmap
                   key: REDIS_PORT
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: RABBITMQ_PASSWORD
 ---
 apiVersion: v1
 kind: Service
@@ -53,9 +73,7 @@ metadata:
 spec:
   selector:
     app: rag
-  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 31000

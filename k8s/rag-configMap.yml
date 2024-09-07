@@ -3,7 +3,9 @@ kind: ConfigMap
 metadata:
   name: rag-configmap
 data:
-  CHROMA_HOST: chromadb
-  CHROMA_PORT: 8000
-  REDIS_HOST: redis
-  REDIS_PORT: 6379
+  CHROMA_HOST: chromadb-service
+  CHROMA_PORT: "8800"
+  REDIS_HOST: redis-service
+  REDIS_PORT: "6379"
+  RABBITMQ_HOST: rabbitmq-service
+  RABBITMQ_PORT: "5672"

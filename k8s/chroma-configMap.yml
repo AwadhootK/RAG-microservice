@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: chromadb-configmap
 data:
-  ANONYMIZED_TELEMETRY: False
-  IS_PERSISTENT: 1
+  ANONYMIZED_TELEMETRY: "False"
+  IS_PERSISTENT: "1"
   PERSIST_DIRECTORY: /chroma/my_db
   CHROMA_HOST: chromadb
-  CHROMA_PORT: 8000
+  CHROMA_PORT: "8000"

@@ -1,24 +1,28 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: chromadb
-  labels:
-    app: chromadb
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: chromadb
+  serviceName: "chromadb-service"
+  minReadySeconds: 5
   template:
     metadata:
       labels:
         app: chromadb
     spec:
+      terminationGracePeriodSeconds: 5
       containers:
         - name: chromadb-app
           image: awadhootk/rag-service:chromadb
           ports:
-            - containerPort: 8800
+            - containerPort: 8000
+          volumeMounts:
+            - name: chromadb-storage
+              mountPath: /rag/chromadb
           env:
             - name: CHROMA_HOST
               valueFrom:
@@ -45,6 +49,10 @@ spec:
                 configMapKeyRef:
                   name: chromadb-configmap
                   key: PERSIST_DIRECTORY
+      volumes:
+        - name: chromadb-storage
+          persistentVolumeClaim:
+            claimName: chromadb-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -56,4 +64,4 @@ spec:
   ports:
     - protocol: TCP
       port: 8800
-      targetPort: 8800
+      targetPort: 8000

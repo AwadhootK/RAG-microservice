@@ -1,6 +1,5 @@
-import base64
 import io
-import json
+import os
 import time
 
 import pika
@@ -10,9 +9,10 @@ from utils.redis_service import get_redis_connection
 
 
 def try_connect():
-    credentials = pika.PlainCredentials('admin', 'pass@123')
+    credentials = pika.PlainCredentials(
+        os.getenv("RABBITMQ_USERNAME"), os.getenv("RABBITMQ_PASSWORD"))
     return pika.BlockingConnection(
-        pika.ConnectionParameters(host='rabbitmq', port=5672, connection_attempts=5, retry_delay=1, credentials=credentials))
+        pika.ConnectionParameters(host=os.getenv("RABBITMQ_HOST"), port=os.getenv("RABBITMQ_PORT"), connection_attempts=5, retry_delay=1, credentials=credentials))
 
 
 def write_logs(log):

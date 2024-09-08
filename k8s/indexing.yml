@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: indexing
+  labels:
+    app: indexing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: indexing
+  template:
+    metadata:
+      labels:
+        app: indexing
+    spec:
+      containers:
+        - name: indexing
+          image: awadhootk/rag-service:indexing
+          ports:
+            - containerPort: 8100
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: GOOGLE_API_KEY
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: CHROMA_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: REDIS_PORT
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: indexing-service
+spec:
+  selector:
+    app: indexing
+  ports:
+    - protocol: TCP
+      port: 8100
+      targetPort: 8100

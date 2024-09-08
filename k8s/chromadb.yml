@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chromadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromadb
+  minReadySeconds: 5
+  serviceName: chromadb
+  template:
+    metadata:
+      labels:
+        app: chromadb
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: chromadb
+          image: awadhootk/rag-service:chromadb
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: chromadb-storage
+              mountPath: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/chromadb
+          env:
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_PORT
+            - name: ANONYMIZED_TELEMETRY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: ANONYMIZED_TELEMETRY
+            - name: IS_PERSISTENT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: IS_PERSISTENT
+            - name: PERSIST_DIRECTORY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: PERSIST_DIRECTORY
+  volumeClaimTemplates:
+    - metadata:
+        name: chromadb-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chromadb
+spec:
+  type: ClusterIP
+  selector:
+    app: chromadb
+  ports:
+    - protocol: TCP
+      port: 8200
+      targetPort: 8000
+      name: chromadb

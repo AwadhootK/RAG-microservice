@@ -84,6 +84,8 @@ def start_consuming():
         connection.close()
         return
 
+    conn = get_redis_connection()
+
     def callback(ch, method, properties, body):
         # payload = json.loads(body)
         # username = base64.b64decode(payload['userID'])
@@ -94,18 +96,17 @@ def start_consuming():
         file_name = properties.headers.get('userID', 'default')
         job_id = properties.headers.get('job_id', 'default')
 
-        # ! figure out how to send userid
         userfile = UploadFile(file=file_like_object, filename=file_name)
 
-        # write_logs(f'received payload')
+        write_logs(f'received payload')
 
-        get_redis_connection().set(job_id, "processing")
+        conn.set(job_id, "processing")
 
         index_files(file=userfile, userID=userfile.filename)
 
-        # write_logs(f'indexing of {userfile.filename} done')
+        write_logs(f'indexing of {userfile.filename} done')
 
-        get_redis_connection().set(job_id, "done")
+        conn.set(job_id, "done")
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
 

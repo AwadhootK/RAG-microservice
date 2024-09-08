@@ -14,6 +14,7 @@ minikube start
 ### Create k8s deplyoment
 ```
 chmod +x start-commands.sh
+./start-commands.sh
 ```
 OR
 ```

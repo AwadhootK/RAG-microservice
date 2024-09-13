@@ -23,6 +23,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 @RefreshScope
 @Component

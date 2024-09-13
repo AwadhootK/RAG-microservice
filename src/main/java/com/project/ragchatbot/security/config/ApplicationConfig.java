@@ -1,7 +1,5 @@
 package com.project.ragchatbot.security.config;
 
-import com.project.ragchatbot.security.user.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +11,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.project.ragchatbot.security.user.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -20,6 +22,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        // functional interface so using lambda expression
         return username -> userRepository
                 .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
@@ -40,7 +43,7 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws  Exception {
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }

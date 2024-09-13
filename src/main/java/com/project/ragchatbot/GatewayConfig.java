@@ -13,14 +13,18 @@ public class GatewayConfig {
 
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
+        // going to invoke rabbitmq here...
+        String INDEXING_URI = "http://" + System.getenv("INDEXING_HOST") + ":" + System.getenv("INDEXING_PORT");
+        String RAG_URI = "http://" + System.getenv("RAG_HOST") + ":" + System.getenv("RAG_PORT");
+
         return builder.routes()
                 .route("indexing-service", r -> r.path("/indexing/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://cars-service"))
+                        .uri(INDEXING_URI))
 
                 .route("rag-service", r -> r.path("/rag/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://auth-service"))
+                        .uri(RAG_URI))
                 .build();
     }
 }

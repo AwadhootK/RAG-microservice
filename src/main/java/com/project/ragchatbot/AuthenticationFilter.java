@@ -2,6 +2,7 @@ package com.project.ragchatbot;
 
 import com.project.ragchatbot.security.config.JWTService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @RefreshScope
 @Component
 public class AuthenticationFilter implements GatewayFilter {
@@ -51,6 +53,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
             if (!authHeader.startsWith("Bearer ")) {
                 System.out.println("Invalid - " + authHeader);
+                log.debug("Invalid - {}", authHeader);
                 return this.onError(exchange, HttpStatus.FORBIDDEN, "Invalid Token: " + authHeader);
             }
 

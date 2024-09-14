@@ -18,6 +18,7 @@ spring:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
+
 # INDEXING_HOST: ${INDEXING_HOST}
 # INDEXING_PORT: ${INDEXING_PORT}
 # RAG_HOST: ${RAG_HOST}
@@ -33,3 +34,8 @@ spring:
 # POSTGRES_DB: ${POSTGRES_DB}
 # POSTGRES_USERNAME: ${POSTGRES_USERNAME}
 # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+logging:
+  level:
+    root: warn
+  file:
+    name: logs.log

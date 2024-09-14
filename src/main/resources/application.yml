@@ -38,4 +38,7 @@ logging:
   level:
     root: warn
   file:
-    name: logs.log
+    name:
+  pattern:
+    console: %d{yyyy-MM-dd HH:mm:ss} - %msg%n
+

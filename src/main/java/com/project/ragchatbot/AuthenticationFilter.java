@@ -10,19 +10,16 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 @RefreshScope
@@ -48,10 +45,12 @@ public class AuthenticationFilter implements GatewayFilter {
                 return this.onError(exchange, HttpStatus.UNAUTHORIZED, "Token not found!");
             }
             final String authHeader = this.getAuthHeader(request);
+            System.out.println("AUTHHEADER = "+authHeader);
             final String jwt;
             final String email;
 
             if (!authHeader.startsWith("Bearer ")) {
+                System.out.println("Invalid - " + authHeader);
                 return this.onError(exchange, HttpStatus.FORBIDDEN, "Invalid Token: " + authHeader);
             }
 

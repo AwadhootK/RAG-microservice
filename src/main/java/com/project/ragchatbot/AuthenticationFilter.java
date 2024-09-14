@@ -48,12 +48,13 @@ public class AuthenticationFilter implements GatewayFilter {
             }
             final String authHeader = this.getAuthHeader(request);
             System.out.println("AUTHHEADER = "+authHeader);
+            log.warn("AUTHHEADER = "+authHeader);
             final String jwt;
             final String email;
 
             if (!authHeader.startsWith("Bearer ")) {
                 System.out.println("Invalid - " + authHeader);
-                log.debug("Invalid - {}", authHeader);
+                log.warn("Invalid - {}", authHeader);
                 return this.onError(exchange, HttpStatus.FORBIDDEN, "Invalid Token: " + authHeader);
             }
 

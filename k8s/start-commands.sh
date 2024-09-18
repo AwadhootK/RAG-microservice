@@ -12,5 +12,8 @@ kubectl apply -f postgres-pv.yml
 kubectl apply -f postgres.yml
 kubectl apply -f rag.yml
 kubectl apply -f indexing.yml
+kubectl apply -f auth-configMap.yml
+kubectl apply -f auth-secret.yml
+kubectl apply -f auth.yml
 kubectl apply -f spring.yml
 kubectl get pods -w

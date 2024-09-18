@@ -95,6 +95,16 @@ spec:
                 configMapKeyRef:
                   name: spring-configmap
                   key: POSTGRES_PORT
+            - name: AUTH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: AUTH_HOST
+            - name: AUTH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: AUTH_PORT
 
 ---
 apiVersion: v1

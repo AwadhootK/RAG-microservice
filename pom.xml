@@ -70,6 +70,7 @@
     </dependencyManagement>
 
     <build>
+    <finalName>spring-api-gateway</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

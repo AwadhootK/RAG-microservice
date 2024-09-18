@@ -7,5 +7,5 @@ RUN mvn clean package -DskipTests
 # Stage 2: Create the runtime image
 FROM openjdk:latest
 EXPOSE 8080
-COPY --from=build /app/target/rag-chatbot-spring-server.jar rag-chatbot-spring-server.jar
-ENTRYPOINT ["java", "-jar", "/rag-chatbot-spring-server.jar"]
+COPY --from=build /app/target/spring-api-gateway.jar spring-api-gateway.jar
+ENTRYPOINT ["java", "-jar", "/spring-api-gateway.jar"]

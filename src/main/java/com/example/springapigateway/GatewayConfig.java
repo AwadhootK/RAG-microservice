@@ -19,7 +19,7 @@ public class GatewayConfig {
         public RouteLocator routes(RouteLocatorBuilder builder) {
                 final String RAG_URI = "http://rag-service:8000/";
                 // System.getenv("RAG_HOST")+":"+System.getenv("RAG_PORT")+"/";
-                final String AUTH_URI = "http://auth-service:8500/";
+                final String AUTH_URI = "http://10.110.114.222:8500/";
                 // System.getenv("AUTH_HOST") + ":" + System.getenv("AUTH_PORT") + "/";
 
                 return builder.routes()

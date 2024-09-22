@@ -18,8 +18,8 @@ def get_embedding_function():
 
 
 def get_chroma_client():
-    write_logs(f"\n\nCHROMA HOST = {os.getenv("CHROMA_HOST")}")
-    write_logs(f"\n\nCHROMA PORT = {os.getenv("CHROMA_PORT")}")
+    # write_logs(f"\n\nCHROMA HOST = {os.getenv("CHROMA_HOST")}")
+    # write_logs(f"\n\nCHROMA PORT = {os.getenv("CHROMA_PORT")}")
     return chromadb.HttpClient(
         host=os.getenv("CHROMA_HOST"),
         port=os.getenv("CHROMA_PORT"))

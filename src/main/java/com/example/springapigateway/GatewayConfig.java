@@ -1,6 +1,8 @@
 package com.example.springapigateway;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class GatewayConfig {
 
     private final AuthenticationFilter filter;
@@ -15,8 +18,11 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
         final String RAG_URI = System.getenv("RAG_HOST")+":"+System.getenv("RAG_PORT")+"/";
-        final String AUTH_URI = System.getenv("AUTH_HOST")+":"+System.getenv("AUTH_PORT")+"/";
-
+        final String AUTH_URI = System.getenv("AUTH_HOST") + ":" + System.getenv("AUTH_PORT") + "/";
+        
+        log.info(AUTH_URI);
+        log.info(RAG_URI);
+        
         return builder.routes()
                 .route("auth-service", r -> r.path("/auth/**")
                         .filters(f -> f.filter(filter)

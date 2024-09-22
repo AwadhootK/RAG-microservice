@@ -4,11 +4,11 @@ import authRouter from './routes/authRoutes'
 
 const app = express()
 
-var options = {
-  origin: 'http://localhost:8080'
-}
+// var options = {
+// origin: 'http://localhost:8080'
+// }
 
-app.use(cors(options))
+app.use(cors())
 
 app.use(express.json())
 

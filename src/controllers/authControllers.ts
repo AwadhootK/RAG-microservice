@@ -5,6 +5,7 @@ import { createToken, verifyToken } from '../services/jwt'
 import { passwordCheck } from '../services/passwordCheck'
 
 export const signup = async (req: Request, res: Response) => {
+  console.log('Signup request received')
   const { username, password } = req.body
 
   // Check if username and password are provided
@@ -51,11 +52,13 @@ export const signup = async (req: Request, res: Response) => {
     })
   } catch (error) {
     // Handle errors gracefully
+    console.error('Error during signup:', error)
     res.status(500).json({ error: 'An error occurred during signup' })
   }
 }
 
 export const login = async (req: Request, res: Response) => {
+  console.log('Login request received')
   const { username, password } = req.body
 
   if (!username || !password) {

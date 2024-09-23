@@ -100,7 +100,9 @@ export const login = async (req: Request, res: Response) => {
     })
   } catch (error) {
     console.error('Error during login:', error)
-    return res.status(500).json({ error: 'An error occurred during login' })
+    return res
+      .status(500)
+      .json({ error: 'An error occurred during login', errorMsg: error })
   }
 }
 

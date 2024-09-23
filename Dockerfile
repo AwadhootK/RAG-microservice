@@ -26,8 +26,8 @@ RUN npx prisma generate
 # Use Node.js image for the production stage
 FROM node:18.16.0-alpine as production
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories && \
-    apk update && apk add --no-cache ping curl
+RUN apk update || echo "Update failed" && \
+    apk add --no-cache ping curl
 
 # Set the working directory
 WORKDIR /app

@@ -1,6 +1,5 @@
 package com.example.springapigateway;
 
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -10,6 +9,8 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+
+import io.jsonwebtoken.Claims;
 import reactor.core.publisher.Mono;
 
 @RefreshScope
@@ -60,7 +61,8 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private void updateRequest(ServerWebExchange exchange, String token) {
-        // used to add a new header to the incoming request
+        // used to add a new header [username] after fetching it from the JWT token to
+        // the incoming request before forwarding it...
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
         exchange.getRequest().mutate()
                 .header("username", String.valueOf(claims.get("username")))

@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM openjdk:latest
+FROM amazoncorretto:latest
 
 RUN apk add --no-cache iputils curl
 

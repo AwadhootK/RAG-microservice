@@ -5,14 +5,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM amazoncorretto:latest
-
-# Optionally install ping (iputils) and curl if needed in the runtime image
-RUN yum update -y && yum install -y iputils curl && yum clean all
-
-RUN yum -y install java-1.8.0
-
-RUN yum remove java-1.7.0-openjdk
+FROM openjdk:latest
 
 # Expose port 8080
 EXPOSE 8080

@@ -17,10 +17,12 @@ public class GatewayConfig {
 
         @Bean
         public RouteLocator routes(RouteLocatorBuilder builder) {
-                final String RAG_URI = "http://rag-service:8000/";
-                // System.getenv("RAG_HOST")+":"+System.getenv("RAG_PORT")+"/";
-                final String AUTH_URI = "http://auth-service:8500/";
-                // System.getenv("AUTH_HOST") + ":" + System.getenv("AUTH_PORT") + "/";
+                final String RAG_URI =
+                                // "http://rag-service:8000/";
+                                System.getenv("RAG_HOST") + ":" + System.getenv("RAG_PORT") + "/";
+                final String AUTH_URI =
+                                // "http://auth-service:8500/";
+                                System.getenv("AUTH_HOST") + ":" + System.getenv("AUTH_PORT") + "/";
 
                 return builder.routes()
                                 .route("auth-service", r -> r.path("/auth/**")

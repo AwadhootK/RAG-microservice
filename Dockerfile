@@ -35,6 +35,8 @@ COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/prisma /app/prisma 
 
+RUN npx prisma migrate dev --name init
+
 # Expose port 8500
 EXPOSE 8500
 

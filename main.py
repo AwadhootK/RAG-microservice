@@ -14,10 +14,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allow all origins by using ["*"]
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -31,7 +31,7 @@ async def root():
     return create_json_response({"message": "pong"})
 
 
-@app.get("/get_redis_temp/{job_id}")
+@app.get("/get_job_status/{job_id}")
 async def redis(job_id):
     return create_json_response({"redis": get_all_redis(job_id=job_id)})
 

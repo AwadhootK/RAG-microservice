@@ -12,10 +12,18 @@ public class RedisController {
     @Autowired
     private RedisService redisService;
 
-    @PostMapping
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("pong");
+    }
+
+    @PostMapping("/")
     public ResponseEntity<String> saveChats(@RequestHeader("username") String username,
                                             @RequestParam String newChatName,
                                             @RequestParam String redisChatKey) {
+        // get username from header
+        // get newChatName from user input on frontend
+        // get redisCacheKey returned by RAG service 
         try {
             ChatModel savedChat = redisService.saveChatsFromRedis(username, newChatName, redisChatKey);
             return ResponseEntity.ok().body("Chat ID: " + savedChat.getChatId());
@@ -25,7 +33,7 @@ public class RedisController {
         }
     }
 
-    @GetMapping
+    @DeleteMapping("/")
     public ResponseEntity<String> deleteChats(@RequestHeader("username") String username,
                                               @RequestParam String redisChatKey) {
         try {

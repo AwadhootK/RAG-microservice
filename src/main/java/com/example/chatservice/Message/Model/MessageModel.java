@@ -2,12 +2,14 @@ package com.example.chatservice.Message.Model;
 
 import com.example.chatservice.Chat.Model.ChatModel;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigInteger;
 
 @Entity
 @Table(name = "Chat")
+@Data
 public class MessageModel implements Serializable {
 
     private static final long serialVersionUID = 856444116;

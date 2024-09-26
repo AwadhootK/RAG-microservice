@@ -6,7 +6,7 @@ import com.example.chatservice.Message.Model.MessageModel;
 import java.util.List;
 
 public interface RedisService {
-    List<MessageModel> getMessagesFromRedis(String username) throws Exception;
+    List<MessageModel> getMessagesFromRedis(String redisKey, ChatModel chat) throws Exception;
 
     ChatModel saveChatsFromRedis(String username, String newChatName, String redisChatKey) throws Exception;
 

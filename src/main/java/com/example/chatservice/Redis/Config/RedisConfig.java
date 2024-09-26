@@ -10,6 +10,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 public class RedisConfig {
@@ -20,8 +21,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, List<MessageModel>> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, List<MessageModel>> template = new RedisTemplate<>();
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());

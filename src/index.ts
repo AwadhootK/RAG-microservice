@@ -4,8 +4,8 @@ import authRouter from './routes/authRoutes'
 
 const app = express()
 
-// var options = {
-// origin: 'http://localhost:8080'
+// var allowedOrigins = {
+//   origin: `http://${process.env.SPRING_HOST}:${process.env.SPRING_PORT}`
 // }
 
 app.use(cors())

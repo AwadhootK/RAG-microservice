@@ -1,6 +1,5 @@
 package com.example.chatservice.Chat.Model;
 
-import com.example.chatservice.Message.Model.ChatModel;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -14,6 +13,7 @@ public class ChatModel implements Serializable {
     private static final long serialVersionUID = 937935837;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "chat_id")
     private BigInteger chatId;
 

@@ -4,12 +4,13 @@ import com.example.chatservice.Message.Model.MessageModel;
 import com.example.chatservice.Chat.Model.ChatModel;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public interface MessageService {
-    ChatModel getAllChats();
+    List<MessageModel> getAllMessages(BigInteger chatID);
 
-    MessageModel saveChat(MessageModel chat);
+    MessageModel saveMessage(MessageModel chat) throws Exception;
 
-    MessageModel deleteChat(BigInteger chatID);
+    MessageModel deleteMessage(BigInteger chatID) throws Exception;
 
 }

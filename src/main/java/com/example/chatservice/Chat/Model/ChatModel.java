@@ -1,6 +1,8 @@
 package com.example.chatservice.Chat.Model;
 
+import com.example.chatservice.Message.Model.MessageModel;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -8,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "UserChat")
+@Data
 public class ChatModel implements Serializable {
 
     private static final long serialVersionUID = 937935837;
@@ -24,5 +27,5 @@ public class ChatModel implements Serializable {
     private String chatName;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "chat")
-    private List<ChatModel> chats;
+    private List<MessageModel> chats;
 }

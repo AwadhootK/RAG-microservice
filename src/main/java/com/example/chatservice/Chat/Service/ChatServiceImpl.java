@@ -2,6 +2,7 @@ package com.example.chatservice.Chat.Service;
 
 import com.example.chatservice.Chat.Model.ChatModel;
 import com.example.chatservice.Chat.Repository.ChatRepository;
+import com.example.chatservice.Redis.Service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public List<ChatModel> getAllChats(String username) {

@@ -1,16 +1,13 @@
 package com.example.chatservice.Chat.Service;
 
 import com.example.chatservice.Chat.Model.ChatModel;
-import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.List;
 
-@Service
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
     @Override
-    public List<ChatModel> getAllChats() {
-        return List.of();
+    public ChatModel getAllChats() {
+        return null;
     }
 
     @Override
@@ -19,7 +16,7 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
-    public ChatModel deleteChat(BigInteger chatID) {
+    public ChatModel deleteChat(BigInteger messageID) {
         return null;
     }
 }

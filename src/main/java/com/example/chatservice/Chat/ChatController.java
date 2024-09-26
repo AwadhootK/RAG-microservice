@@ -2,22 +2,22 @@ package com.example.chatservice.Chat;
 
 import com.example.chatservice.Chat.Model.ChatModel;
 import com.example.chatservice.Chat.Service.ChatService;
+import com.example.chatservice.Message.Model.MessageModel;
+import com.example.chatservice.Message.Service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @RestController
-@RequestMapping(path = "/chats")
+@RequestMapping(path = "/chat")
 public class ChatController {
-
     @Autowired
     private ChatService chatService;
 
     @GetMapping("/")
-    public ResponseEntity<List<ChatModel>> getChats() {
+    public ResponseEntity<ChatModel> getChats() {
         return ResponseEntity.ok().body(chatService.getAllChats());
     }
 
@@ -27,7 +27,7 @@ public class ChatController {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<ChatModel> deleteChat(@RequestBody BigInteger chatID) {
-        return ResponseEntity.ok().body(chatService.deleteChat(chatID));
+    public ResponseEntity<ChatModel> deleteChat(@RequestBody BigInteger messageID) {
+        return ResponseEntity.ok().body(chatService.deleteChat(messageID));
     }
 }

@@ -4,12 +4,13 @@ import com.example.chatservice.Chat.Model.ChatModel;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.List;
 
+@Service
 public interface ChatService {
-    List<ChatModel> getAllChats();
+
+    ChatModel getAllChats();
 
     ChatModel saveChat(ChatModel chat);
 
-    ChatModel deleteChat(BigInteger chatID);
+    ChatModel deleteChat(BigInteger messageID);
 }

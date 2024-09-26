@@ -1,28 +1,28 @@
 package com.example.chatservice.Chat.Model;
 
-import com.example.chatservice.savedChat.Model.SavedChatModel;
+import com.example.chatservice.Message.Model.ChatModel;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.List;
 
 @Entity
-@Table(name = "Chat")
+@Table(name = "UserChat")
 public class ChatModel implements Serializable {
 
-    private static final long serialVersionUID = 856444116;
+    private static final long serialVersionUID = 937935837;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "message_id")
-    private BigInteger messageId;
+    @Column(name = "chat_id")
+    private BigInteger chatId;
 
-    @Column(name = "message",nullable = false)
-    private String message;
+    @Column(name = "user_id")
+    private String userID;
 
-    @Column(name = "role")
-    private Role role;
+    @Column(name = "chat_name")
+    private String chatName;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "chat_id")
-    private SavedChatModel chat;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "chat")
+    private List<ChatModel> chats;
 }

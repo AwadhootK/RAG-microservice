@@ -15,6 +15,11 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok().body("pong");
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<ChatModel>> getAllChats(@RequestHeader("username") String username) {
         return ResponseEntity.ok().body(chatService.getAllChats(username));

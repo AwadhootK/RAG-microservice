@@ -11,7 +11,7 @@ FROM openjdk:latest
 EXPOSE 8080
 
 # Copy the built JAR from the build stage
-COPY --from=build /app/target/chats-service.jar chats-service.jar
+COPY --from=build /app/target/chat-service.jar chat-service.jar
 
 # Set the entry point to run the Spring application
-ENTRYPOINT ["java", "-jar", "/chats-service.jar"]
+ENTRYPOINT ["java", "-jar", "/chat-service.jar"]

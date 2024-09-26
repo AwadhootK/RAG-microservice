@@ -16,6 +16,11 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok().body("pong");
+    }
+
     @GetMapping("/{messageID}")
     public ResponseEntity<List<MessageModel>> getAllMessages(@PathVariable BigInteger messageID) {
         return ResponseEntity.ok().body(messageService.getAllMessages(messageID));

@@ -1,14 +1,14 @@
 package com.example.chatservice.Message.Service;
 
-import com.example.chatservice.Message.Model.MessageModel;
-import com.example.chatservice.Message.Repository.MessageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.chatservice.Message.Model.MessageModel;
+import com.example.chatservice.Message.Repository.MessageRepository;
 
 @Service
 public class MessageServiceImpl implements MessageService {

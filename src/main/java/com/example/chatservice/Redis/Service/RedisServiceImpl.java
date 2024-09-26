@@ -36,7 +36,7 @@ public class RedisServiceImpl implements RedisService {
 
                     MessageModel messageModel = new MessageModel();
                     messageModel.setMessage(result.get("message"));
-                    messageModel.setRole(result.get("role").equalsIgnoreCase("USER") ? Role.USER : Role.AI);
+                    messageModel.setRole(result.get("role").equalsIgnoreCase("User") ? Role.USER : Role.AI);
                     messageModel.setChat(chat);
 
                     messageModelList.add(messageModel);
@@ -62,6 +62,7 @@ public class RedisServiceImpl implements RedisService {
 
         messageRepository.saveAll(messageList);
 
+        deleteChatsFromRedis(username, redisChatKey);
         return savedChat;
     }
 

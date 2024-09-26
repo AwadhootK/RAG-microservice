@@ -1,10 +1,11 @@
 package com.example.chatservice.Chat.Service;
 
-import com.example.chatservice.Chat.Model.ChatModel;
-import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.example.chatservice.Chat.Model.ChatModel;
 
 @Service
 public interface ChatService {

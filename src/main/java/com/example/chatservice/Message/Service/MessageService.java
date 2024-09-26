@@ -1,9 +1,9 @@
 package com.example.chatservice.Message.Service;
 
-import com.example.chatservice.Message.Model.MessageModel;
-
 import java.math.BigInteger;
 import java.util.List;
+
+import com.example.chatservice.Message.Model.MessageModel;
 
 public interface MessageService {
     List<MessageModel> getAllMessages(BigInteger chatID);

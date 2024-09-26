@@ -1,11 +1,20 @@
 package com.example.chatservice.Message.Model;
 
-import com.example.chatservice.Chat.Model.ChatModel;
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigInteger;
+
+import com.example.chatservice.Chat.Model.ChatModel;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "Chat")
@@ -18,7 +27,7 @@ public class MessageModel implements Serializable {
     @Column(name = "message_id")
     private BigInteger messageId;
 
-    @Column(name = "message",nullable = false)
+    @Column(name = "message", nullable = false)
     private String message;
 
     @Column(name = "role")

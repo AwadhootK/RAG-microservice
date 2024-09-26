@@ -1,15 +1,16 @@
 package com.example.chatservice.Chat.Service;
 
-import com.example.chatservice.Chat.Model.ChatModel;
-import com.example.chatservice.Chat.Repository.ChatRepository;
-import com.example.chatservice.Redis.Service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.chatservice.Chat.Model.ChatModel;
+import com.example.chatservice.Chat.Repository.ChatRepository;
+import com.example.chatservice.Redis.Service.RedisService;
 
 @Service
 public class ChatServiceImpl implements ChatService {

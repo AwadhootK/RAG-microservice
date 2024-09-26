@@ -19,11 +19,11 @@ public class RedisController {
 
     @PostMapping("/")
     public ResponseEntity<String> saveChats(@RequestHeader("username") String username,
-                                            @RequestParam String newChatName,
-                                            @RequestParam String redisChatKey) {
+            @RequestParam String newChatName,
+            @RequestParam String redisChatKey) {
         // get username from header
         // get newChatName from user input on frontend
-        // get redisCacheKey returned by RAG service 
+        // get redisCacheKey returned by RAG service
         try {
             ChatModel savedChat = redisService.saveChatsFromRedis(username, newChatName, redisChatKey);
             return ResponseEntity.ok().body("Chat ID: " + savedChat.getChatId());
@@ -35,7 +35,7 @@ public class RedisController {
 
     @DeleteMapping("/")
     public ResponseEntity<String> deleteChats(@RequestHeader("username") String username,
-                                              @RequestParam String redisChatKey) {
+            @RequestParam String redisChatKey) {
         try {
             redisService.deleteChatsFromRedis(username, redisChatKey);
             return ResponseEntity.ok().body("Deleted chats of user: " + username);

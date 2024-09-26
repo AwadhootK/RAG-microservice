@@ -35,8 +35,8 @@ public class ChatController {
         }
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<ChatModel> deleteChat(@RequestBody BigInteger chatID) {
+    @DeleteMapping("/{chatID}")
+    public ResponseEntity<ChatModel> deleteChat(@PathVariable("chatID") BigInteger chatID) {
         try {
             return ResponseEntity.ok().body(chatService.deleteChat(chatID));
         } catch (Exception e) {

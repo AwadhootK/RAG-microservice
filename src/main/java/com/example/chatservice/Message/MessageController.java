@@ -16,9 +16,9 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @GetMapping("/{chatID}")
-    public ResponseEntity<List<MessageModel>> getAllMessages(@PathVariable BigInteger chatID) {
-        return ResponseEntity.ok().body(messageService.getAllMessages(chatID));
+    @GetMapping("/{messageID}")
+    public ResponseEntity<List<MessageModel>> getAllMessages(@PathVariable BigInteger messageID) {
+        return ResponseEntity.ok().body(messageService.getAllMessages(messageID));
     }
 
     @PostMapping("/")
@@ -31,8 +31,8 @@ public class MessageController {
         }
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<MessageModel> deleteMessage(@RequestBody BigInteger messageID) {
+    @DeleteMapping("/{messageID}")
+    public ResponseEntity<MessageModel> deleteMessage(@PathVariable BigInteger messageID) {
         try {
             return ResponseEntity.ok().body(messageService.deleteMessage(messageID));
         } catch (Exception e) {

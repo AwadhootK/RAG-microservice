@@ -1,7 +1,9 @@
+from typing import Annotated
+
 import uvicorn
 from chatbot import *
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from model import AnswerLLMModel, QueryModel
 from starlette.middleware.cors import CORSMiddleware
 from utils.response import *
@@ -37,21 +39,27 @@ async def redis(job_id):
 
 
 @app.post("/ask")
-async def respond(queryBody: QueryModel):
-    ans = answer(query=queryBody.query, userID=queryBody.username)
+async def respond(queryBody: QueryModel, username: Annotated[str | None, Header()] = None):
+    if not username:
+        return create_json_response({'error': 'Username not present'}, status_code=401)
+    ans = answer(query=queryBody.query, userID=username)
     return create_json_response({'query': queryBody.query, 'answer': ans})
 
 
-@app.get("/summarize/{username}")
-async def summarize_doc(username):
+@app.get("/summarize")
+async def summarize_doc(username: Annotated[str | None, Header()] = None):
+    if not username:
+        return create_json_response({'error': 'Username not present'}, status_code=401)
     summary = summarize_from_llm(userID=username)
     return create_json_response({'summary': summary})
 
 
 @app.post("/semantic_search")
-async def semantic_search(queryBody: QueryModel):
+async def semantic_search(queryBody: QueryModel, username: Annotated[str | None, Header()] = None):
+    if not username:
+        return create_json_response({'error': 'Username not present'}, status_code=401)
     semantic_result = sematic_doc_search_by_vector(
-        query=queryBody.query, userID=queryBody.username)
+        query=queryBody.query, userID=username)
     return create_json_response({'similar_doc': semantic_result})
 
 
@@ -61,8 +69,10 @@ async def answer_llm(queryBody: AnswerLLMModel):
     return create_json_response({'answer': answer})
 
 
-@app.delete("/empty-context/{username}")
-async def delete_context(username):
+@app.delete("/empty-context")
+async def delete_context(username: Annotated[str | None, Header()] = None):
+    if not username:
+        return create_json_response({'error': 'Username not present'}, status_code=401)
     clear_context(userID=username)
     return create_json_response({'message': f'{username}\'s context cleared successfully!'})
 
@@ -94,12 +104,6 @@ async def upload_file(
         "job_id": job_id,
         "status": "processing..."
     })
-
-
-@app.post("/push-redis")
-async def redis_get(query: QueryModel):
-    push_index_queue(query=query.query)
-    return create_json_response({"message": "Added to queue!"})
 
 if __name__ == "__main__":
     # ? run: source ../../../../venvs/rag_env/bin/activate

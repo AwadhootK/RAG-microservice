@@ -7,6 +7,7 @@ from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
 from model import AnswerLLMModel, QueryModel
 from starlette.middleware.cors import CORSMiddleware
 from utils.response import *
+from utils.save_chat_service import save_chat
 
 app = FastAPI()
 
@@ -43,7 +44,19 @@ async def respond(queryBody: QueryModel, username: Annotated[str | None, Header(
     if not username:
         return create_json_response({'error': 'Username not present'}, status_code=401)
     ans = answer(query=queryBody.query, userID=username)
-    return create_json_response({'query': queryBody.query, 'answer': ans})
+    redis_key = save_chat(message=queryBody.query,
+                          role="User", userID=username)
+    save_chat(message=ans, role="AI", userID=username)
+    return create_json_response({'query': queryBody.query, 'answer': ans, 'redis_key': redis_key})
+
+
+@app.post("/answer-llm")
+async def answer_llm(queryBody: AnswerLLMModel, username: Annotated[str | None, Header()] = None):
+    answer = answer_from_llm(query=queryBody.query)
+    redis_key = save_chat(message=queryBody.query,
+                          role="User", userID=username)
+    save_chat(message=answer, role="AI", userID=username)
+    return create_json_response({'answer': answer, 'redis_key': redis_key})
 
 
 @app.get("/summarize")
@@ -61,12 +74,6 @@ async def semantic_search(queryBody: QueryModel, username: Annotated[str | None,
     semantic_result = sematic_doc_search_by_vector(
         query=queryBody.query, userID=username)
     return create_json_response({'similar_doc': semantic_result})
-
-
-@app.post("/answer-llm")
-async def answer_llm(queryBody: AnswerLLMModel):
-    answer = answer_from_llm(query=queryBody.query)
-    return create_json_response({'answer': answer})
 
 
 @app.delete("/empty-context")

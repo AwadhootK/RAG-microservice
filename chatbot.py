@@ -70,8 +70,10 @@ def answer(query, userID):
         'chat_history': []  # ! add the history here
     })
 
-    store_summarize_chat_history(
-        userID=userID, currentQ=query, currentA=response['answer'])
+    #! uncomment later
+    # store_summarize_chat_history(
+    #     userID=userID, currentQ=query, currentA=response['answer'])
+    
     return response['answer']
 
 

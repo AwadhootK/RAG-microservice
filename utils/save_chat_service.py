@@ -1,7 +1,6 @@
 import json
-import uuid
 
-from redis_service import get_from_redis, get_redis_connection
+from utils.redis_service import get_redis_connection
 
 
 def generate_redis_chat_key(userID: str) -> str:

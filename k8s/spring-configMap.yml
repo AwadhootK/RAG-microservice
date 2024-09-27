@@ -13,3 +13,5 @@ data:
   RABBITMQ_PORT: "5672"
   POSTGRES_HOST: postgres-service
   POSTGRES_PORT: "5432"
+  CHAT_HOST: chat-service
+  CHAT_PORT: "8081"

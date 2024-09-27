@@ -95,6 +95,16 @@ spec:
                 configMapKeyRef:
                   name: spring-configmap
                   key: POSTGRES_PORT
+            - name: CHAT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: CHAT_HOST
+            - name: CHAT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: CHAT_PORT
 
 ---
 apiVersion: v1

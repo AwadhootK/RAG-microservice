@@ -19,6 +19,7 @@ public class GatewayConfig {
         public RouteLocator routes(RouteLocatorBuilder builder) {
                 final String RAG_URI = "http://" + System.getenv("RAG_HOST") + ":" + System.getenv("RAG_PORT") + "/";
                 final String AUTH_URI = "http://" + System.getenv("AUTH_HOST") + ":" + System.getenv("AUTH_PORT") + "/";
+                final String CHAT_URI = "http://" + System.getenv("CHAT_HOST") + ":" + System.getenv("CHAT_PORT") + "/";
 
                 return builder.routes()
                                 .route("auth-service", r -> r.path("/auth/**")
@@ -28,6 +29,9 @@ public class GatewayConfig {
                                 .route("rag-service", r -> r.path("/rag/**")
                                                 .filters(f -> f.filter(filter).stripPrefix(1))
                                                 .uri(RAG_URI))
+                                .route("chat-service", r -> r.path("/chat/**")
+                                                .filters(f -> f.filter(filter).stripPrefix(1))
+                                                .uri(CHAT_URI))
                                 .build();
         }
 }

@@ -45,16 +45,16 @@ spec:
                 secretKeyRef:
                   name: chat-secret
                   key: RABBITMQ_PASSWORD
-            - name: SPRING_REDIS_HOST
+            - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
                   name: chat-configmap
-                  key: SPRING_REDIS_HOST
-            - name: SPRING_REDIS_PORT
+                  key: REDIS_HOST
+            - name: REDIS_PORT
               valueFrom:
                 configMapKeyRef:
                   name: chat-configmap
-                  key: SPRING_REDIS_PORT
+                  key: REDIS_PORT
             - name: INDEXING_HOST
               valueFrom:
                 configMapKeyRef:

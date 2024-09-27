@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: chat-configmap
 data:
-  SPRING_REDIS_HOST: redis-service
-  SPRING_REDIS_PORT: "6379"
+  REDIS_HOST: redis-service
+  REDIS_PORT: "6379"
   INDEXING_HOST: indexing-service
   INDEXING_PORT: "8100"
   RAG_HOST: rag-service

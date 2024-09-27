@@ -17,6 +17,7 @@ spec:
       containers:
         - name: auth-app
           image: awadhootk/rag-service:auth
+          imagePullPolicy: Always
           ports:
             - containerPort: 8500
           env:
@@ -45,6 +46,11 @@ spec:
                 configMapKeyRef:
                   name: auth-configmap
                   key: POSTGRES_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-configmap
+                  key: DATABASE_URL
 
 ---
 apiVersion: v1

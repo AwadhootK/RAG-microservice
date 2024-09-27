@@ -17,6 +17,7 @@ spec:
       containers:
         - name: rag
           image: awadhootk/rag-service:rag
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           env:

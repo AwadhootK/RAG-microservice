@@ -5,3 +5,4 @@ metadata:
 data:
   POSTGRES_HOST: postgres
   POSTGRES_PORT: "5432"
+  DATABASE_URL: "postgresql://awadhoot:awadhootk6@postgres:5432/jwt_security?schema=public"

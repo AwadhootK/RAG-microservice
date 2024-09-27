@@ -15,3 +15,5 @@ data:
   POSTGRES_PORT: "5432"
   AUTH_HOST: auth-service
   AUTH_PORT: "8500"
+  CHAT_HOST: chat-service
+  CHAT_PORT: "8081"

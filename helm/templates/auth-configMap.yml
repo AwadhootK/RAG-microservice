@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap
+data:
+  POSTGRES_HOST: "{{.Values.configmap.POSTGRES_HOST}}"
+  POSTGRES_PORT: "{{.Values.configmap.POSTGRES_PORT}}"
+  DATABASE_URL: "{{.Values.configmap.POSTGRES_DB}}"

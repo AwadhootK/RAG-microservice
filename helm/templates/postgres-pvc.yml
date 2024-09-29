@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{.Values.postgres.pvc.name}}
+spec:
+  volumeName: {{.Values.postgres.pv.name}}
+  storageClassName: standard
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{.Values.postgres.pvc.requestStorage}}

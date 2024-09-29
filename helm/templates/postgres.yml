@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.postgres.deployment}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.postgres.deployment}}
+  serviceName: {{.Values.postgres.service}}
+  replicas: {{.Values.postgres.replicas}}
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: {{.Values.postgres.deployment}}
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: {{.Values.postgres.deployment}}
+          image: postgres:latest
+          ports:
+            - containerPort: {{.Values.postgres.containerPort}}
+              name: {{.Values.postgres.deployment}}
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: util-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: util-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: util-secret
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: {{.Values.postgres.storage}}
+              mountPath: {{.Values.postgres.mountPath}}
+              # mountPath: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/postgres
+  volumeClaimTemplates:
+    - metadata:
+        name: {{.Values.postgres.storage}}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.postgres.service}}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{.Values.postgres.deployment}}
+  ports:
+    - port: {{.Values.postgres.servicePort}}
+      targetPort: {{.Values.postgres.containerPort}}
+      name: {{.Values.postgres.deployment}}

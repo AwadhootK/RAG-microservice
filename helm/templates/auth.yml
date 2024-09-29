@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.auth.deployment}}
+  labels:
+    app: {{.Values.auth.deployment}}
+spec:
+  replicas: {{.Values.auth.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.auth.deployment}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.auth.deployment}}
+    spec:
+      containers:
+        - name: {{.Values.auth.deployment}}
+          image: awadhootk/rag-service:auth
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{.Values.auth.containerPort}}
+          env:
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: POSTGRES_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: auth-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-configmap
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-configmap
+                  key: POSTGRES_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auth-configmap
+                  key: DATABASE_URL
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.auth.service}}
+spec:
+  selector:
+    app: {{.Values.auth.deployment}}
+  ports:
+    - protocol: TCP
+      port: {{.Values.auth.servicePort}}
+      targetPort: {{.Values.auth.containerPort}}

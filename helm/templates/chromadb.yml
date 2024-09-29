@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.chroma.deployment}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{.Values.chroma.deployment}}
+  minReadySeconds: 5
+  serviceName: {{.Values.chroma.service}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.chroma.deployment}}
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: {{.Values.chroma.deployment}}
+          image: awadhootk/rag-service:chromadb
+          ports:
+            - containerPort: {{.Values.chroma.containerPort}}
+          volumeMounts:
+            - name: {{.Values.chroma.storage}}
+              mountPath: {{.Values.chroma.mountPath}}
+          env:
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: CHROMA_PORT
+            - name: ANONYMIZED_TELEMETRY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: ANONYMIZED_TELEMETRY
+            - name: IS_PERSISTENT
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: IS_PERSISTENT
+            - name: PERSIST_DIRECTORY
+              valueFrom:
+                configMapKeyRef:
+                  name: chromadb-configmap
+                  key: PERSIST_DIRECTORY
+  volumeClaimTemplates:
+    - metadata:
+        name: {{.Values.chroma.storage}}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.chroma.service}}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{.Values.chroma.deployment}}
+  ports:
+    - protocol: TCP
+      port: {{.Values.chroma.servicePort}}
+      targetPort: {{.Values.chroma.containerPort}}
+      name: chromadb

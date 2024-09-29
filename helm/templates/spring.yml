@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.spring.deployment}}
+  labels:
+    app: {{.Values.spring.deployment}}
+spec:
+  replicas: {{.Values.spring.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.spring.deployment}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.spring.deployment}}
+    spec:
+      containers:
+        - name: {{.Values.spring.deployment}}
+          image: awadhootk/rag-service:spring
+          ports:
+            - containerPort: {{.Values.spring.containerPort}}
+          env:
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: POSTGRES_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: POSTGRES_DB
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: spring-secret
+                  key: RABBITMQ_PASSWORD
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: SPRING_REDIS_PORT
+            - name: INDEXING_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: INDEXING_HOST
+            - name: INDEXING_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: INDEXING_PORT
+            - name: RAG_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: RAG_HOST
+            - name: RAG_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: RAG_PORT
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: RABBITMQ_PORT
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: POSTGRES_PORT
+            - name: AUTH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: AUTH_HOST
+            - name: AUTH_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: AUTH_PORT
+            - name: CHAT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: CHAT_HOST
+            - name: CHAT_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-configmap
+                  key: CHAT_PORT
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.spring.service}}
+spec:
+  selector:
+    app: {{.Values.spring.deployment}}
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: {{.Values.spring.servicePort}}
+      targetPort: {{.Values.spring.containerPort}}
+      nodePort: {{.Values.spring.nodePort}}

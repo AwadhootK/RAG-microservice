@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-configmap
+data:
+  SPRING_REDIS_HOST: "{{.Values.configmap.REDIS_HOST}}"
+  SPRING_REDIS_PORT: "{{.Values.configmap.REDIS_PORT}}"
+  INDEXING_HOST: "{{.Values.configmap.INDEXING_HOST}}"
+  INDEXING_PORT: "{{.Values.configmap.INDEXING_PORT}}"
+  RAG_HOST: "{{.Values.configmap.RAG_HOST}}"
+  RAG_PORT: "{{.Values.configmap.RAG_PORT}}"
+  RABBITMQ_HOST: "{{.Values.configmap.RABBITMQ_HOST}}"
+  RABBITMQ_PORT: "{{.Values.configmap.RABBITMQ_PORT}}"
+  POSTGRES_HOST: "{{.Values.configmap.POSTGRES_HOST}}"
+  POSTGRES_PORT: "{{.Values.configmap.POSTGRES_PORT}}"
+  AUTH_HOST: "{{.Values.configmap.AUTH_HOST}}"
+  AUTH_PORT: "{{.Values.configmap.AUTH_PORT}}"
+  CHAT_HOST: "{{.Values.configmap.CHAT_HOST}}"
+  CHAT_PORT: "{{.Values.configmap.CHAT_PORT}}"

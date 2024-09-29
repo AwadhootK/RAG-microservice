@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{.Values.chroma.pvc.name}}
+spec:
+  volumeName: {{.Values.chroma.pv.name}}
+  storageClassName: standard
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{.Values.chroma.pvc.requestStorage}}

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.rabbitmq.deployment}}
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.rabbitmq.deployment}}
+  serviceName: {{.Values.rabbitmq.service}}
+  replicas: {{.Values.rabbitmq.replicas}}
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: {{.Values.rabbitmq.deployment}}
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: {{.Values.rabbitmq.deployment}}
+          image: rabbitmq:management
+          ports:
+            - containerPort: {{.Values.rabbitmq.rabbitmqContainerPort}}
+              name: {{.Values.rabbitmq.deployment}}
+            - containerPort: {{.Values.rabbitmq.rabbitmqMgmtContainerPort}}
+              name: {{.Values.rabbitmq.rabbitmqMgmt}}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: util-secret
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: util-secret
+                  key: RABBITMQ_DEFAULT_PASS
+          volumeMounts:
+            - name: {{.Values.rabbitmq.storage}}
+              mountPath: {{.Values.rabbitmq.mountPath}}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{.Values.rabbitmq.storage}}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.rabbitmq.service}}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{.Values.rabbitmq.deployment}}
+  ports:
+    - port: {{.Values.rabbitmq.rabbitmqServicePort}}
+      targetPort: {{.Values.rabbitmq.rabbitmqContainerPort}}
+      name: {{.Values.rabbitmq.deployment}}
+    - port: {{.Values.rabbitmq.rabbitmqMgmtServicePort}}
+      targetPort: {{.Values.rabbitmq.rabbitmqMgmtContainerPort}}
+      name: {{.Values.rabbitmq.rabbitmqMgmt}}

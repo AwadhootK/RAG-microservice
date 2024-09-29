@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-configmap
+data:
+  CHROMA_HOST: "{{.Values.configmap.CHROMA_HOST}}"
+  CHROMA_PORT: "{{.Values.configmap.CHROMA_PORT}}"
+  REDIS_HOST: "{{.Values.configmap.REDIS_HOST}}"
+  REDIS_PORT: "{{.Values.configmap.REDIS_PORT}}"
+  RABBITMQ_HOST: "{{.Values.configmap.RABBITMQ_HOST}}"
+  RABBITMQ_PORT: "{{.Values.configmap.RABBITMQ_PORT}}"

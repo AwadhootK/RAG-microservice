@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.rag.deployment}}
+  labels:
+    app: {{.Values.rag.deployment}}
+spec:
+  replicas: {{.Values.rag.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.rag.deployment}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.rag.deployment}}
+    spec:
+      containers:
+        - name: {{.Values.rag.deployment}}
+          image: awadhootk/rag-service:rag
+          ports:
+            - containerPort: {{.Values.rag.containerPort}}
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: GOOGLE_API_KEY
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: CHROMA_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: REDIS_PORT
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-configmap
+                  key: RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secret
+                  key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.rag.service}}
+spec:
+  selector:
+    app: {{.Values.rag.deployment}}
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: {{.Values.rag.servicePort}}
+      targetPort: {{.Values.rag.containerPort}}
+      nodePort: {{.Values.rag.nodePort}}

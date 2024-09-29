@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-configmap
+data:
+  REDIS_HOST: "{{.Values.configmap.REDIS_HOST}}"
+  REDIS_PORT: "{{.Values.configmap.REDIS_PORT}}"
+  INDEXING_HOST: "{{.Values.configmap.INDEXING_PORT}}"
+  INDEXING_PORT: "{{.Values.configmap.INDEXING_PORT}}"
+  RAG_HOST: "{{.Values.configmap.RAG_PORT}}"
+  RAG_PORT: "{{.Values.configmap.RAG_PORT}}"
+  RABBITMQ_HOST: "{{.Values.configmap.RABBITMQ_HOST}}"
+  RABBITMQ_PORT: "{{.Values.configmap.RABBITMQ_PORT}}"
+  POSTGRES_HOST: "{{.Values.configmap.POSTGRES_HOST}}"
+  POSTGRES_PORT: "{{.Values.configmap.POSTGRES_PORT}}"

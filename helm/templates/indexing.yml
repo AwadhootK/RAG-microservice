@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.indexing.deployment}}
+  labels:
+    app: {{.Values.indexing.deployment}}
+spec:
+  replicas: {{.Values.indexing.replicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.indexing.deployment}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.indexing.deployment}}
+    spec:
+      containers:
+        - name: {{.Values.indexing.deployment}}
+          image: awadhootk/rag-service:indexing
+          ports:
+            - containerPort: {{.Values.indexing.containerPort}}
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: GOOGLE_API_KEY
+            - name: CHROMA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: CHROMA_HOST
+            - name: CHROMA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: CHROMA_PORT
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: REDIS_PORT
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: indexing-configmap
+                  key: RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: indexing-secret
+                  key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.indexing.service}}
+spec:
+  selector:
+    app: {{.Values.indexing.deployment}}
+  ports:
+    - protocol: TCP
+      port: {{.Values.indexing.servicePort}}
+      targetPort: {{.Values.indexing.containerPort}}

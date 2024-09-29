@@ -1,0 +1,133 @@
+rag:
+  deployment: rag
+  service: rag-service
+  containerPort: 8000
+  servicePort: 8000
+  nodePort: 30000
+  replicas: 1
+
+indexing:
+  deployment: indexing
+  service: indexing-service
+  containerPort: 8100
+  servicePort: 8100
+  replicas: 1
+
+spring:
+  deployment: spring
+  service: spring-service
+  containerPort: 8080
+  servicePort: 8080
+  nodePort: 32000
+  replicas: 1
+
+auth:
+  deployment: auth
+  service: auth-service
+  containerPort: 8500
+  servicePort: 8500
+  replicas: 1
+
+chat:
+  deployment: chat
+  service: chat-service
+  containerPort: 8081
+  servicePort: 8081
+  replicas: 1
+
+redis:
+  deployment: redis
+  service: redis
+  storage: redis-storage
+  mountPath: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/redis
+  containerPort: 6379
+  servicePort: 6379
+  replicas: 1
+  pv:
+    name: redis-pv
+    capacity: 1Gi
+    path: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/redis
+  pvc:
+    name: redis-pvc
+    requestStorage: 1Gi
+
+rabbitmq:
+  deployment: rabbitmq
+  service: rabbitmq
+  replicas: 1
+  rabbitmqMgmt: rabbitmq-mgmt
+  storage: rabbitmq-storage
+  mountPath: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/rabbitmq
+  rabbitmqContainerPort: 5672
+  rabbitmqServicePort: 5672
+  rabbitmqMgmtContainerPort: 15672
+  rabbitmqMgmtServicePort: 15672
+  pv:
+    name: rabbitmq-pv
+    capacity: 1Gi
+    path: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/rabbitmq
+  pvc:
+    name: rabbitmq-pvc
+    requestStorage: 1Gi
+
+postgres:
+  deployment: postgres
+  service: postgres
+  replicas: 1
+  storage: postgres-storage
+  mountPath: /var/lib/postgresql/data
+  containerPort: 5432
+  servicePort: 5432
+  pv:
+    name: postgres-pv
+    capacity: 1Gi
+    path: /var/lib/postgresql/data
+  pvc:
+    name: postgres-pvc
+    requestStorage: 1Gi
+
+chroma:
+  deployment: chroma
+  service: chroma
+  replicas: 1
+  storage: chromadb-storage
+  mountPath: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/chromadb
+  containerPort: 8000
+  servicePort: 8200
+  pv:
+    name: chromadb-pv
+    capacity: 1Gi
+    path: /Users/awadhootkhutwad/Desktop/MinikubeVolumes/chromadb
+  pvc:
+    name: chromadb-pvc
+    requestStorage: 1Gi
+
+configmap:
+  CHROMA_HOST: chromadb
+  CHROMA_PORT: 8000
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_PORT: 5672
+  INDEXING_HOST: indexing-service
+  INDEXING_PORT: 8100
+  RAG_HOST: rag-service
+  RAG_PORT: 8000
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: postgresql://awadhoot:awadhootk6@postgres:5432/jwt_security?schema=public
+  AUTH_HOST: auth-service
+  AUTH_PORT: 8500
+  CHAT_HOST: chat-service
+  CHAT_PORT: 8081
+  ANONYMIZED_TELEMETRY: False
+  IS_PERSISTENT: 1
+  PERSIST_DIRECTORY: /chroma/my_db
+
+secret:
+  RABBITMQ_DEFAULT_USER: YWRtaW4=
+  RABBITMQ_DEFAULT_PASS: cGFzc0AxMjM=
+  POSTGRES_USER: YXdhZGhvb3Q=
+  POSTGRES_PASSWORD: YXdhZGhvb3RrNg==
+  POSTGRES_DB: and0X3NlY3VyaXR5
+  GOOGLE_API_KEY: QUl6YVN5Qi1RdzQ0U2NPeU1iSXE5RXExNTFMYy15bFBBVDBMdVpN

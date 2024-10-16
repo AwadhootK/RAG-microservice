@@ -3,10 +3,9 @@ import json
 from fastapi import UploadFile
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from utils.chroma_service import *
-from utils.folder_service import *
-from utils.redis_service import *
-from utils.chroma_service import *
+from utils.chroma_service import get_chromadb_collection_intsance
+from utils.folder_service import empty_folder, save_file
+from utils.redis_service import get_redis_connection
 
 
 def index_files(file: UploadFile, userID):

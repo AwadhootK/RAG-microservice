@@ -4,6 +4,7 @@ import time
 
 import pika
 from fastapi import UploadFile
+from indexing import index_files
 from utils.redis_service import get_redis_connection
 
 

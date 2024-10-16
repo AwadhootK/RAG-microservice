@@ -6,8 +6,6 @@ from chromadb import Collection
 from langchain.vectorstores import Chroma
 from resources.custom_embedding_wrapper import EmbeddingAdapter
 from utils.chroma_service import *
-from utils.rabbitmq_service import write_logs
-from utils.redis_service import *
 
 warnings.filterwarnings("ignore")
 

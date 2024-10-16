@@ -29,10 +29,13 @@ def index_files(file: UploadFile, userID):
         raise Exception("Could not read file")
 
     chromadb_collection = get_chromadb_collection_intsance(userID=userID)
+
+    print(texts, flush=True)
+    
     chromadb_collection.add(
         ids=[str(i) for i in range(len(texts))], documents=texts)
 
     # store texts in redis here
     get_redis_connection().set(f"{userID}/texts", json.dumps(texts))
 
-    print('vector indexing done!')
+    print('vector indexing done!', flush=True)
